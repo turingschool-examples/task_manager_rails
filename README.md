@@ -32,7 +32,7 @@ Let's break down this command to better understand what is happening.  `rails ne
 Now that we have created our rails app, let's `cd task_manager` and explore some of the structure that Rails builds out for us.
 
 <p align="center">
-  ![Imgur](https://i.imgur.com/dHXvRD4.png?1)
+  <img src="https://i.imgur.com/dHXvRD4.png?1" title="source: imgur.com" />
 </p>
 
 Taking a look at the files that rails creates can be a bit overwhelming at first, but don't worry - this tutorial will only touch on a handful of directories!  The top level directories that we are concered with are:
