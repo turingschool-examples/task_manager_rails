@@ -70,7 +70,7 @@ Now, let's take a look back at your terminal and walkthrough what just happened.
 
 ```
 Started GET "/" for ::1 at 2019-04-13 14:38:02 -0600
-Processing by Rails::WelcomeController#index as HTML
+Processing by Rails::Welcome#index as HTML
   Rendering /Users/meganmcmahon/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/railties-5.1.7/lib/rails/templates/rails/welcome/index.html.erb
   Rendered /Users/meganmcmahon/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/railties-5.1.7/lib/rails/templates/rails/welcome/index.html.erb (2.6ms)
 Completed 200 OK in 254ms (Views: 9.1ms)
@@ -87,9 +87,151 @@ Let's update our app to show something other than the default Rails welcome - th
 The first thing we need to do, is tell our app how to handle specific requests, we will do this by adding the following code to our `config/routes.rb` file:
 
 ```ruby
+# config/routes.rb
+
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   get '/', to: 'welcome#index'
 end
 ```
+
+This line that we added is telling our application that anytime we receive a `GET` request for the URI `'/'`, we should perform the `index` action within our `welcome` controller.  If this sentence was complete nonsense to you, go back and review [How the Web Works](https://github.com/turingschool/intermission-assignments/blob/master/2be/details/how_the_web_works.md) and [Intro to MVC](https://github.com/turingschool/backend-curriculum-site/blob/gh-pages/module2/lessons/intro_to_mvc.md). If you don't feel like you have a full grasp on _exactly_ what is going on here, that's ok, we will be reiterating a practicing these concepts throughout the Mod.
+
+Go back to your browser and refresh the page - you should now be seeing an error telling you that you have a `Routing Error`; specifically, that you have an `uninitialized constant Welcome Controller`.  This is a good thing; at this point, we have told our application which controller action to perferm when this request is received, but we haven't created that controller (or the action) yet.  So, let's go do that.
+
+Open your `controllers` directory and create a file inside called `welcome_controller.rb`.  In that file, add the following code (remember that it is *strongly* recommended that you not copy/paste, but practice typing out this code).
+
+```ruby
+# app/controllers/welcome_controller.rb
+
+class WelcomeController < ApplicationController
+
+  
+end
+```
+
+Go back to your browser and refresh the page again.  You should now be seeing a new error `The action 'index' could not be found for WelcomeController`.  Rails is telling us that it was able to get to the controller that we wanted, but wasn't able to find the action that we had specified for this request.  Update your `welcome_controller.rb` to include this action:
+
+```ruby
+# app/controllers/welcome_controller.rb
+
+class WelcomeController < ApplicationController
+  def index
+
+  end
+end
+```
+
+Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for this request`.  Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser it the response body.  It was expecting to find some HMTL that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
+
+In your views directory, add a sub-directory called `welcome` and, within that directory, a file called `index.html.erb`.  When creating views, we name the files the same as our action: `def index` to `index.html.erb`. And, those files will live in a directory with the same name as our controller: `WelcomeController` to `views/welcome/`.
+
+In that file, add the following HTML:
+
+```erb
+<h1>Welcome to the Task Manager</h1>
+
+<ul>
+  <li><a href="/tasks">Task Index</a></li>
+  <li><a href="/tasks/new">New Task</a></li>
+</ul>
+```
+
+We have an h1 tag for our welcome message, then an unordered list (ul) with two list items (li) inside. If you are unfamiliar with HTML tags, try one of the HTML tutorials before continuing.
+
+Inside of each li tag, we have an a tag. The href of the tag is the path where the link will go. In the first a tag, the path will be [http://localhost:3000/tasks](http://localhost:3000/tasks). The second path will be [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new).
+
+Refresh your browser and you should now see an error-free view! What do you think will happen if you click on one of these links? More errors - but that's ok! We can use these errors to help guide us in our development.
+
+## Adding a Task Index
+
+From the home page of your app (localhost:3000/), click on the link for `Task Index`.  You should see an error telling you that `No route matches [GET] "/tasks"`.  Our app received a request that it was not set up to handle, so let's change that!
+
+First we need to update our `config/routes.rb` to handle a `GET '/tasks'` request.  Update your `routes.rb` file to include the following:
+
+```ruby
+# config/routes.rb
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  get '/', to: 'welcome#index'
+  get '/tasks', to: 'tasks#index'
+end
+```
+
+Thinking back to the welcome page that we created, what are our next steps to get this route to work properly? In order to display an error free view, we will need to add a `Tasks Controller`, an `index` action in that controller, and an `index.html.erb` file for that controller action.
+
+First, add a new controller to your controllers directory called `tasks_controller.rb`
+
+```ruby
+# app/controllers/tasks_controller.rb
+
+class TasksController < ApplicationController
+  def index
+    @tasks = ['Task 1', 'Task 2', 'Task 3']
+  end
+end
+```
+
+Now, have a Tasks Controller with an index action that is holding on to a list of tasks in our instance variable `@tasks`.  Rails allows us to set up instance variables in our controllers to send information down to our views.  To see this in action, let's create a new view: `app/views/tasks/index.html.erb` and put the following code inside:
+
+```erb
+<h1>All Tasks</h1>
+
+<% @tasks.each do |task| %>
+  <h3><%= task %></h3>
+<% end %>
+```
+
+Refresh your browser and check that our tasks are showing up - our index view is in ok shape now.
+
+## Adding New Tasks
+
+We need a route that will bring a user to a form where they can enter a new task. This is the second link we had on our welcome page. In our routes.rb file:
+
+```ruby
+# config/routes.rb
+
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  get '/', to: 'welcome#index'
+  get '/tasks', to: 'tasks#index'
+  get '/tasks/new', to: 'tasks#new'
+end
+```
+
+And then in our tasks controller: 
+
+```ruby
+# app/controllers/tasks_controller.rb
+
+class TasksController < ApplicationController
+  def index
+    @tasks = ['Task 1', 'Task 2', 'Task 3']
+  end
+
+  def new
+  end
+end
+```
+
+In this case, we don't need an instance variable, we just need to render the new view, so we can leave the method as is!
+
+And now we will create a new view for `tasks/new.html.erb` and include the following:
+
+```erb
+<form action="/tasks" method="post">
+  <p>Enter a new task:</p>
+  <input type='text' name='task[title]'/><br/>
+  <textarea name='task[description]'></textarea><br/>
+  <input type='submit'/>
+</form>
+```
+
+Here we have a form with an action (url path) of /tasks and a method of post. This combination of path and verb will be important when we create the route in the controller. We then have an text input field for the title, a textarea for the description, and a submit button.
+
+Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
+
+Try clicking the submit button. You should get a `No route matches [POST] "/tasks"` error because we haven't set up a route in our app to handle this method/action (POST '/tasks') combination from the form submission.
