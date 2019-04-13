@@ -223,6 +223,7 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 
 ```erb
 <form action="/tasks" method="post">
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
   <p>Enter a new task:</p>
   <input type='text' name='task[title]'/><br/>
   <textarea name='task[description]'></textarea><br/>
@@ -235,3 +236,37 @@ Here we have a form with an action (url path) of /tasks and a method of post. Th
 Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
 
 Try clicking the submit button. You should get a `No route matches [POST] "/tasks"` error because we haven't set up a route in our app to handle this method/action (POST '/tasks') combination from the form submission.
+
+In our `routes.rb`:
+
+```ruby
+# config/routes.rb
+
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  get '/', to: 'welcome#index'
+  
+  get '/tasks', to: 'tasks#index'
+  get '/tasks/new', to: 'tasks#new'
+  post '/tasks', to: 'tasks#create'
+end
+```
+
+And in our `tasks_controller.rb`:
+
+```ruby
+# app/controllers/tasks_controller.rb
+
+class TasksController < ApplicationController
+  def index
+    @tasks = ['Task 1', 'Task 2', 'Task 3']
+  end
+
+  def new
+  end
+
+  def create
+  end
+end
+```
