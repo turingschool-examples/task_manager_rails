@@ -184,6 +184,8 @@ Now, have a Tasks Controller with an index action that is holding on to a list o
 <% end %>
 ```
 
+Before we take a look at our browser again, let's dig into these tags: `<%= %>` and `<% %>`.  Both sets are called erb tags - erb stands for 'embedded ruby'.  A combination of our file format `.html.erb` and the use of these tags allows us to execute ruby code directly in our html files.  The difference between the two is that `<%= %>` will echo (or display) the return value of the ruby commands in your view, and the `<% %>` will not echo (or display) the return value of the ruby commands.  So, in the view that we just created, we *do* want the user to see the return value of each `task` in a `h3` tag, but we *do not* want the user to see the return value of the `each` method.
+
 Refresh your browser and check that our tasks are showing up - our index view is in ok shape now.
 
 ## Adding New Tasks
