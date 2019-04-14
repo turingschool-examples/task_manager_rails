@@ -673,10 +673,29 @@ Refresh your browser, and now you should see something that looks a bit nicer.
 
 Let's see if we can show some individual tasks. At this point we should be able to rely on a lot of the pieces we have already set up. At a high level we want to do the following:
 
+  * Add a link to an individual task from the index
   * Add a route for an individual task
   * In our controller, find a specific task to send to a view
   * Create a view to show details for a specific task
   * Add links to our index view to aid in navigating to a specifc task
+  
+### Add a Link to an Individual Task
+
+From a users perspective, it makes the most sense to have a link to each task directly from the tasks index page.  Let's update our `views/tasks/index.html.erb` to include this link:
+
+```erb
+<h1>All Tasks</h1>
+
+<% @tasks.each do |task| %>
+  <h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
+  <p><%= task.description %></p>
+  <a href="/tasks/<%= task.id  %>/edit">Edit</a>
+<% end %>
+```
+
+Now, when we visit [http://localhost:3000/tasks](http://localhost:3000/tasks), instead of seeing just a plain text of each tasks title, we will see that title as a link to an individual task's show page.
+
+But that link won't work just yet!
   
 ### Add a Route and Controller Action for an Individual Task
 
