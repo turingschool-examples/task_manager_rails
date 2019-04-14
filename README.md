@@ -604,4 +604,184 @@ Now, refresh your browser - what do you see? You are now seeing... something... 
 
 Refresh your browser, and now you should see something that looks a bit nicer.
 
+## Showing Individual Tasks
 
+Let's see if we can show some individual tasks. At this point we should be able to rely on a lot of the pieces we have already set up. At a high level we want to do the following:
+
+  * Add a route for an individual task
+  * In our controller, find a specific task to send to a view
+  * Create a view to show details for a specific task
+  * Add links to our index view to aid in navigating to a specifc task
+  
+### Add a Route and Controller Action for an Individual Task
+
+In our `conig/routes.rb` file, add the following route:
+
+```ruby
+# config/routes.rb
+
+get '/tasks/:id`, to: "tasks#show"
+```
+And in our `tasks_controller.rb` add a show action:
+we h
+```ruby
+# app/controllers/tasks_controller.rb
+
+def show
+
+end
+```
+
+### Add a Show View
+
+Before we get to what will live inside this show action, let's dream up what we might want to be in our view for this action.
+
+In our views folder, create a file for `views/tasks/show.html.erb` and put the following HTML inside it:
+
+```erb
+# app/views/tasks/show.html.erb
+
+<a href="/tasks">Task Index</a>
+
+<h1><%= @task.title %></h1>
+
+<p><%= @task.description %></p>
+```
+
+Now, we have a show page that will show the information for a specific task, as well as a link back to the task index page.
+
+Let's see if we have accomplished our goal - navigate to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1) and let's see what happens. 
+
+More errors!  We should be seeing an error message telling us that we have a `NoMethodError in Tasks#show`, and if we look more closely, we are specifically seeing an `undefined method 'title' for nil:NilClass`.  Thinking back to the errors we have seen in Mod1 - this is telling us that we are calling a method, `title` on a `nil`; in other words, `@task` is not holding on to a specific task that we can call `title` and `description` on.
+
+### Finding Specific Tasks
+
+Let's look back at our show action in our tasks controller and see if we can set up our instance variable `@tasks`.  Remember  when we talked about how we are inheriting some functionality from ActiveRecord that helps us interact with our database?  Well, now's a great place to take advantage of the ActiveRecord method `find`, which will retreive a record from our database based on that record's id.  In this case, we can use find like this:
+
+```ruby
+# app/controllers/tasks_controller.rb
+
+def show
+  @task = Task.find(params[:id])
+end
+```
+
+Navigate to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1) and you should now see the show page for that particular task!
+
+But wait - the last time we used params, we were getting information from a form.  There's no form involved in this interaction, so what exactly is happening here? Let's throw a `binding.pry` at the top of our show action and see what we can find:
+
+```ruby
+# app/controllers/tasks_controller.rb
+
+def show
+  binding.pry
+  @task = Task.find(params[:id])
+end
+```
+
+Refresh your browser and take a look at your terminal.  In your pry session, call `params` and see what is returned.
+
+```
+    6: def show
+ => 7:   binding.pry
+    8:   @task = Task.find(params[:id])
+    9: end
+
+[1] pry(#<TasksController>)> params
+=> <ActionController::Parameters {"controller"=>"tasks", "action"=>"show", "id"=>"1"} permitted: false>
+```
+
+We are getting a much simpler params object than when we used a form, and these params include an `:id` that matches with the very end of the uri we visited (/tasks/1).  Looking at our routes, we see that we set up our URI pattern to accept `:id`, but when we visited this site, we typed in `1` which is an actual id that exists in our database.  When we need to get some infomration, like an id, from our route in the form of parameters, we can include a symbol of the thing we are expecting when we set up our route - in this case, we are expecting an `:id`.  So, based on how we set up our routes, we can manipulate and dictate what parameters we want; and what information we will need access to in our controllers.
+
+Remember that you will need to `exit` your pry session to continue interacting with your site!
+
+## Editing a Task
+
+At this point, we have an application that will allow us to visit a home page, see a list of tasks, add a task, and see a specific task. We have covered the Create and Read portions of CRUD. Now, let's add some functionality to be able to Update existing tasks.
+
+This updateing will be very similar to creating new tasks.  At a high level, we will need to:
+
+  * Create a button to edit a specific task
+  * Create a route that will GET us an edit form
+    * Add the action and views for this route
+  * Create a route that will PATCH a specific task based on form input
+    * Add the action that will accomplish this update and redirect the user
+    
+### Add an Edit Button to the Show Page
+
+To make our user experience as smooth as possible, let's create a link to 'Edit' a specific task - similar to the link we created to add a new task.
+
+In our `show.html.erb` file, update the code to include an edit link:
+
+```erb
+<a href="/tasks">Task Index</a>
+
+<h1><%= @task.title %></h1>
+
+<p><%= @task.description %></p>
+
+<a href="/tasks/<%= @task.id %>/edit">Edit</a>
+```
+
+Now, when a user navigates to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1), they will see a link to 'Edit'.  If they click on that link, a `GET` request will be sent to the URI `tasks/:id/edit`.  As of now, that route doesn't exist - let's create it!
+    
+### Creating the Route, Controller Action, and View 
+
+In our `config/routes.rb` file, add the following route:
+
+```ruby
+get '/tasks/:id/edit', to: 'tasks#edit'
+```
+
+And in our taks scontroller, add the following action:
+
+```ruby
+def edit
+  @task = Task.find(params[:id])
+end
+```
+
+Now, we need a view!  This will be similar, but not exactly the same as the view we created for the `new` action. We will need to create the following HTML in `views/tasks/edit.html.erb`: 
+
+```erb
+<form action="/tasks/<%= @task.id %>" method="post">
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+  <input type="hidden" name="_method" value="PATCH" />
+  <p>Edit</p>
+  <input type='text' name='task[title]' value="<%= @task.title %>"/><br/>
+  <textarea name='task[description]'><%= @task.description %></textarea><br/>
+  <input type='submit'/>
+</form>
+```
+
+The way that we have set up this form, including the `@task.title` and `@task.description` as field values, will autofill our form with the current task information, so that a user can update one or both fields and maintain any unchanged information.
+
+Additionally, you'll notice that there's a hidden field with a value of PUT. Normally, HTML forms only allow GET or POST requests (see more information [here])(http://www.w3schools.com/tags/att_form_method.asp).
+
+We're going to want this form to access a route in our controller (that we'll create momentarily) using PATCH to be consistent with conventions about the HTTP verb that is used when updating a resource (take a quick look at [this](https://www.restapitutorial.com/lessons/httpmethods.html) table if this is new information).
+
+HTML won't allow us to use method='patch' in our form tag, but passing it as a hidden value gives our app the information it needs to route the request correctly.
+
+### Updating a Task Resource
+
+Now, our application will need to know what to do when someone submits the edit form, making a `PATCH` request to `/tasks/:id`; so, in our `routes.config.rb`, let's add the following route:
+
+```ruby
+patch '/tasks/:id', to: 'tasks#update'
+```
+
+And in our tasks controller, let's add an `update` action:
+
+```ruby
+def update
+  task = Task.find(params[:id])
+  task.update({
+    title: params[:task][:title],
+    description: params[:task][:description]
+    })
+  task.save
+  redirect_to "/tasks/#{task.id}"
+end
+```
+
+There's a lot going on here - let's break it down.  
