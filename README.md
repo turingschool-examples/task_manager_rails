@@ -785,3 +785,77 @@ end
 ```
 
 There's a lot going on here - let's break it down.  
+
+Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action.  Then, we can use an ActiveRecord, `udpate` to change the object that ActiveRecord found and created for us.  Finally, we need to `save` the changes we made to that object in our database.  And, thinkging way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
+
+Now that we have this edit functionality implented, make sure you have your server running, and play around with your new fancy form!
+
+## Deleting a Task
+
+As of now, we have the Create, Read, and Update functions done - all we are missing is Delete! At a high level we need to:
+
+  * Add a button to delete a specific task
+  * Add a route to handle the request to delete a task
+  * Add a controller action to accomplish the delete
+  
+### Add a Delete Button
+
+We don't need a form to delete a task, but we do need to know which task we want to delete, so we'll leverage a form to create a button that will send a `DELETE` request to a route with our task id.
+
+Let's add this 'button' to our `tasks/index.html.erb`:
+
+```erb
+<h1>All Tasks</h1>
+
+<% @tasks.each do |task| %>
+  <h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
+  <p><%= task.description %></p>
+  <a href="/tasks/<%= task.id  %>/edit">Edit</a>
+  <form action="/tasks/<%= task.id %>" method="POST">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="delete"/>
+  </form>
+<% end %>
+```
+
+Now, if you take a look at our index page at [http://localhost:3000/tasks](http://localhost:3000/tasks), you should see a 'Delete' button for each task.  But, the button will throw an error - why? 
+
+### Add a Delete Route and Controller Action
+
+When we click 'Delete' we gett an error - `No route matches [DELETE] "/tasks/1"`.  So, let's go add that route to our `config/routes.rb`:
+
+```ruby
+DELETE '/tasks/:id`, to: 'tasks#destroy'
+```
+
+And, with this route, we will need to add a `destroy` action to our tasks controller:
+
+```ruby
+def destroy
+  Task.destroy(params[:id])
+  redirect_to '/tasks'
+end
+```
+
+Another new method!  We have used `new`, `save`, `find`, and `update` so far - what is `destroy` doing?  `destroy` is another method we are inheriting from ActiveRecord that destroys records in our database based on an id that you send to the method.
+
+Now, we should be able to navigate to our tasks index at [http://localhost:3000/tasks](http://localhost:3000/tasks) and delete any of our tasks!
+
+### Finished!
+
+Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource!  We can now Create, Read, Update, and Delete tasks!
+
+## CFU
+
+1. Define CRUD.
+2. Explain the difference between value and name in this line: <input type='text' name='task[title]' value="<%= @task.title %>"/>.
+3. What are params? Where do they come from?
+4. Check out your routes. Why do we need two routes each for creating a new Task and editing an existing Task?
+
+
+
+
+
+
+
