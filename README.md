@@ -231,7 +231,7 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 </form>
 ```
 
-Here we have a form with an action (url path) of /tasks and a method of post. This combination of path and verb will be important when we create the route in the controller. We then have an text input field for the title, a textarea for the description, and a submit button.
+Here we have a form with an action (url path) of /tasks and a method of post. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
 
 Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
 
@@ -270,3 +270,338 @@ class TasksController < ApplicationController
   end
 end
 ```
+
+Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) and fill in the form that you see there, and click on 'Submit'.  What happened? Is this what you expected? Based on our form setup, when we click 'Submit', we are sending a new request to our app `POST '/tasks'`.  This request will first hit our routes.rb file, where Rails will use the route that we set up as `POST '/tasks', to: "tasks#create"` to perform the `create` action in our `tasks controller`.  Up to now, when we have asked Rails to perform any actions for which there is no view set up, we have seen an error indicating that there is no view for a specific action.  Why did we not see this error when submitting our form?  Rails is set up to try to anticipate our needs as web developers and will often provide some default functionality, that we commonly refer to as Rails Magic; and that is what is happening here!  Let's dig in a bit more to what Rails is doing when we click on this submit button.
+
+Check out your terminal and you should see something like this:
+
+```
+Started POST "/tasks" for ::1 at 2019-04-14 10:16:44 -0600
+Processing by TasksController#create as HTML
+  Parameters: {"authenticity_token"=>"gJrDRQi8ksOkq1BdhqIDX6z2rFJGbDY4dJzuv2WZuFIU0TRWocSvyQHdbRlGmtvpMNRybXlHn4imyYAwTaWekg==", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+No template found for TasksController#create, rendering head :no_content
+Completed 204 No Content in 94ms
+```
+
+On the first line, we see that our app received a request to `POST` to `'/tasks'`. As our app started trying to handle this request, we eventually got to a point where there was no HTML to render, so Rails attempted to smooth over our user's experience by sending back a response indicating that there is no content in the response.  We see this on the second to last line above `No template found for TasksController#create, rendering head :no_content`.  And, instead of throwing an error, Rails has resolved this response with a successful status code: `Completed 204 No Content`.
+
+The reason that Rails has provided this _magic_ for us, instead of throwing an error, is because Rails is assuming that when any new record is created, we will want to redirect our user's to some new place where they can see this change in place.  Rails will assume that for any POST, PATCH, PUT, and DELETE request, we will want to send a redirect in our response.  So, for these requests and their controller actions, Rails will not error if there is no corresponding HTML in our views folder!
+
+Now let's get back to actually creating this new task. Looking back at our terminal output from submitting the form, there is a bunch of stuff right in the middle that we have not yet discussed.  Specifically, let's take a look at the `parameters: ` section of the output:
+
+```
+  Parameters: {"authenticity_token"=>"gJrDRQi8ksOkq1BdhqIDX6z2rFJGbDY4dJzuv2WZuFIU0TRWocSvyQHdbRlGmtvpMNRybXlHn4imyYAwTaWekg==", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+```
+
+Looking through this information, there are a few things we will want to focus on.  First, the basic structure of the parameters should look familiar - it looks like a Hash!  We will be able to work with these parameters in much the same way we worked with Hashes in Mod1.  Additionally, this parameters 'hash' includes the information that we sent in through our form as a nested hash with the key of 'task' and a value that looks like a hash with key/value pairs that match up with our form fields and the information that we (as a user) sent in when we submitted the form.
+
+Let's take a look at how we can access this information from inside our application.  Throw a pry in your create action so that your controller looks like this:
+
+```ruby
+class TasksController < ApplicationController
+  def index
+    @tasks = ['Task 1', 'Task 2', 'Task 3']
+  end
+
+  def new
+  end
+
+  def create
+    binding.pry
+  end
+end
+```
+
+Now, go back to your browser and click on 'Submit' again, then open your terminal, and you should be in a pry session that looks like this:
+
+```
+Started POST "/tasks" for ::1 at 2019-04-14 10:40:54 -0600
+Processing by TasksController#create as HTML
+  Parameters: {"authenticity_token"=>"gJrDRQi8ksOkq1BdhqIDX6z2rFJGbDY4dJzuv2WZuFIU0TRWocSvyQHdbRlGmtvpMNRybXlHn4imyYAwTaWekg==", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+
+From: /Users/meganmcmahon/turing/staff/1901M2/task_manager/app/controllers/tasks_controller.rb @ line 10 TasksController#create:
+
+     9: def create
+ => 10:   binding.pry
+    11: end
+    
+ [1] pry(#<TasksController>)>
+```
+
+Type in `params` to see some more Rails magic:
+
+```
+     9: def create
+ => 10:   binding.pry
+    11: end
+
+[1] pry(#<TasksController>)> params
+
+=> <ActionController::Parameters {"authenticity_token"=>"gJrDRQi8ksOkq1BdhqIDX6z2rFJGbDY4dJzuv2WZuFIU0TRWocSvyQHdbRlGmtvpMNRybXlHn4imyYAwTaWekg==", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}, "controller"=>"tasks", "action"=>"create"} permitted: false>
+```
+
+Rails has taken the parameters that we received in this request and turned it into a `params` object that we can use and manipulate inside of our application! Play around with this params object to get the two pieces of information we need for our new task - 'title' and 'description'.
+
+```
+[2] pry(#<TasksController>)> params["task"]
+=> <ActionController::Parameters {"title"=>"New Task", "description"=>"This is a new task!"} permitted: false>
+
+[3] pry(#<TasksController>)> params["task"]["title"]
+=> "New Task"
+
+[4] pry(#<TasksController>)> params["task"]["description"]
+=> "This is a new task!"
+
+[5] pry(#<TasksController>)> params[:task]
+=> <ActionController::Parameters {"title"=>"New Task", "description"=>"This is a new task!"} permitted: false>
+
+[6] pry(#<TasksController>)> params[:task][:title]
+=> "New Task"
+
+[7] pry(#<TasksController>)> params[:task][:description]
+=> "This is a new task!"
+```
+
+Taking a look at the commands and their results above, can you spot a difference between the Hashes that you worked with in Mod1 and the params object that rails builds for us?
+
+When working with a Ruby Hash, we use the key *exacly* as it is createe in order to access the value at that location - if a key is set up as a String, we must use a String to access the value.  But, with our Rails params object, we can use either a String, or a Symbol to access values of a specific key.  At this point, it is important to understand this only because it is conventional to use a symbol to access these values, and that is what we will be doing for this tutorial, and in Mod2.
+
+Go back to your terminal and `exit` your pry session to complete the response we interrupted:
+
+```
+[8] pry(#<TasksController>)> exit
+No template found for TasksController#create, rendering head :no_content
+Completed 204 No Content in 410840ms
+```
+
+## Saving Tasks
+
+So we're able to get information in from our form, but we haven't really done much with it yet. It would be great if we could save it somewhere...
+
+### Our Approach
+
+Let's think for a little bit about what we'd like to do with these task params that we're getting when our form is submitted. Really what we want to do here is create a new task using those parameters, and then save it somewhere that we can retrieve it (like a database!).
+
+For now, let's ignore the particulars of that problem. We're going to program with enough faith in ourselves that we can figure those things out when we get to them.
+
+I'm sure we could figure out a way to do everything we needed to do in this file, but right now, as a programmer with some OO background, sitting in my controller, thinking about creating and saving new tasks makes me wish that I had some sort of Task class that I could use to create Task objects.
+
+### Creating a Task Class (Model)
+
+Let's change the code inside of our controller to use this Task class that we're thinking about creating. If it were up to me (and it is), I would create a new task with my task params and then save it so that I could find it later. Let's assume that we're going to create a class that does just that. Let's update our create action in our tasks controller:
+
+
+```ruby
+  def create
+    task = Task.new({
+      title: params[:task][:title],
+      description: params[:task][:description]
+      })
+
+    task.save
+
+    redirect_to '/tasks'
+  end
+```
+
+You'll sometimes see this I'm-going-to-assume-I-have-a-thing-that-works approach referred to as "top-down" programming. For an awesome video demonstration take a look at [this](https://vimeo.com/131588133) when you have a moment. The opposite approach would be "bottom-up" where we start with the smallest piece that we can get to work and start building on it. Both are totally valid.
+
+In order to follow MVC conventions, we are going to create this Task class in a `app/models/task.rb` file. In that file, create a Task class that looks like this:
+
+```ruby
+# app/models/task.rb
+
+class Task < ApplicationRecord
+
+end
+```
+
+Why inherit from `ApplicationRecord`?  This Task class that we are creating is meant to be a very specific and specialized class that we refer to as a Model.  The purpose of Models is to create objects based on records that exist in a database.  Rails give us some methods that we can use to help in this creation and we inherit those methods from `ApplicationRecord`.  Two of the methods that we inherit are `::new` and `#save`, which is great because these are two methods that we are calling in our tasks controller!
+
+When we use the `new` method, Rails is going to attempt to create an object with attributes that match up to column names that exist in a `tasks` table in our database; and, when we attempt to `save` that object, Rails will try to `INSERT` a new record in our database with those attributes. Can you see where we might run into problems? We haven't set up our database yet, much less any tables in that database!
+
+### Creating Our Database
+
+To create our database and connect it to our rails application, go back to your terminal and shut down your server if it is still running, with ctrl+c.  Then run the following command:
+
+```
+$ rails db:create
+```
+
+You should see the following output:
+
+```
+Created database 'task_manager_development'
+Created database 'task_manager_test'
+```
+
+Great, now our database is created!  But, we don't have any tables yet.
+
+### Migrating to our Database
+
+We could potentially create a tasks table directly from our terminal, but that's no fun, and it makes it pretty difficult to work with other people. Instead, let's create some migrations.
+
+Migrations allow you to evolve your database structure over time. Each migration includes instructions to make some change to the database (e.g. adding a table, adding columns to a table, dropping a table, etc.). One advantage to this approach is that it will allow you to transfer the application to different computers without transferring the whole database. This isn't a big problem for us now, but as your database grows it will be advantageous to be able to transfer the instructions to create the database instead of the database itself.
+
+To create a migration that will send instructions to create a tasks table to our database, run the following command from your terminal:
+
+```
+$ rails g migration CreateTask title:string description:string
+```
+
+In this command, we are telling rails to generate `g` a migration file that will create a tasks table in our database with two columns - title and description.  To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`.  Open that file and you will see the following:
+
+```ruby
+class CreateTask < ActiveRecord::Migration[5.1]
+  def change
+    create_table :tasks do |t|
+      t.string :title
+      t.string :description
+    end
+  end
+end
+```
+
+So, now we have a migration with some instructions to tell our database to create a tasks table, but how do we actually get the table created?  Run the following in your terminal:
+
+```
+$ rails db:migrate
+```
+
+And you should see something like this:
+
+```
+== 20190414173402 CreateTask: migrating =======================================
+-- create_table(:tasks)
+   -> 0.0102s
+== 20190414173402 CreateTask: migrated (0.0102s) ==============================
+```
+
+Great!  How can we verify that worked?
+
+In your terminal, connect to the database that we just created, and see if we can select some information from our tasks table:
+
+```
+$ psql -d task_manager_development
+```
+```
+psql (10.1)
+Type "help" for help.
+
+task_manager_development=# SELECT * FROM tasks;
+
+ id | title | description 
+----+-------+-------------
+(0 rows)
+```
+
+Awesome - we have a database with a table for tasks! No records yet, but that's ok - all we needed to know was that our database is up a configured correctly.
+
+To exit psql, use `\q`
+
+### Writing to our Database
+
+Now that we have our Task model created and our database ready to hold on to new tasks, lets start up our server again by running `rails s` and let's put three `binding.pry`'s in our tasks controller's create action so that it looks like this:
+
+```ruby
+  def create
+    binding.pry
+    task = Task.new({
+      title: params[:task][:title],
+      description: params[:task][:description]
+      })
+    binding.pry
+    task.save
+    binding.pry
+    redirect_to '/tasks'
+  end
+ ```
+ 
+ Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new), fill out our form, and click 'Submit'. In our terminal, we should have hit our first pry - let's make sure we have access to the information we need to create a new task:
+
+```
+     9: def create
+ => 10:   binding.pry
+    11:   task = Task.new({
+    12:     title: params[:task][:title],
+    13:     description: params[:task][:description]
+    14:     })
+    15:   binding.pry
+    16:   task.save
+    17:   binding.pry
+    18:   redirect_to '/tasks'
+    19: end
+
+[1] pry(#<TasksController>)> params
+=> <ActionController::Parameters {"authenticity_token"=>"0rLX4XBsN20goM2Y/vLS2EnV1nxts9r0s6XCBXyFaclG+SDy2RQKZ4XW8Nw+ygpu1fcIQ1KYc0Rh8KyKVLlPCQ==", "task"=>{"title"=>"new", "description"=>"task"}, "controller"=>"tasks", "action"=>"create"} permitted: false>
+
+[2] pry(#<TasksController>)> params[:task]
+=> <ActionController::Parameters {"title"=>"new", "description"=>"task"} permitted: false>
+```
+
+Looks good, let's `exit` to hit our next pry and see what `task` looks like at this point:
+
+```
+     9: def create
+    10:   binding.pry
+    11:   task = Task.new({
+    12:     title: params[:task][:title],
+    13:     description: params[:task][:description]
+    14:     })
+ => 15:   binding.pry
+    16:   task.save
+    17:   binding.pry
+    18:   redirect_to '/tasks'
+    19: end
+
+[1] pry(#<TasksController>)> task
+=> #<Task:0x007fdce2660eb0 id: nil, title: "New Task", description: "This is a new task!">
+```
+
+We have a Task object!  We can see that it has a title and a description, but no id; this is telling us that Rails was able to create the object, but has not yet saved it in the database.  Let's `exit` to hit our next pry and see if anything changes.
+
+```
+     9: def create
+    10:   binding.pry
+    11:   task = Task.new({
+    12:     title: params[:task][:title],
+    13:     description: params[:task][:description]
+    14:     })
+    15:   binding.pry
+    16:   task.save
+ => 17:   binding.pry
+    18:   redirect_to '/tasks'
+    19: end
+
+[1] pry(#<TasksController>)> task
+=> #<Task:0x007fdce2660eb0 id: 1, title: "New", description: "Task">
+```
+
+Now, our task has an id, indicating that it was saved in our database! Great, it looks like everything is working, so let's `exit` through this last pry and go check on our browser.
+
+We are now looking at our task index again, but we don't see our new task - why is that?  If we look at our index action, we are setting up an array of Strings, rather than asking our database for all the tasks that currently exist.  Let's change that!
+
+### Reading from our Database
+
+In the same way that we inherited methods to create database records, we have also inherited methods to get `all` records that currently exist in the database.  Let's update our index action in our tasks controller to match the following:
+
+```ruby
+  def index
+    @tasks = Task.all
+  end
+```
+
+Now, refresh your browser - what do you see? You are now seeing... something... but not really what we expected, right? Before, we were sending an array of strings to our view and that view was iterating over the array and creating a list of all the things in that array.  It is still doing that, but now, the things that are in the array are objects, not just strings, so the way we treat them will be slightly different.  Go to your index view and change it to work with task objects instead.
+
+```erb
+<h1>All Tasks</h1>
+
+<% @tasks.each do |task| %>
+  <h3><%= task.title %></h3>
+  <p><%= task.description %></p>
+<% end %>
+```
+
+Refresh your browser, and now you should see something that looks a bit nicer.
+
+
