@@ -19,7 +19,7 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.1.x.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.1.x, you will need to follow [these instructions]() to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.1.x.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.1.x, you will need to follow [these instructions](./rails_uninstall) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
