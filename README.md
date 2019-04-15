@@ -13,7 +13,7 @@ The apps that you will be creating in Mod 2 will make heavy use of these four ac
 
 Let's use Rails to build an application where we can manage some tasks.
 
-We're going to follow the [MVC](http://backend.turing.io/module2/lessons/intro_to_mvc) design pattern, which Rails uses by default, to implement the CRUD actions for our Task Manager app.
+We're going to follow the MVC design pattern, which Rails uses by default, to implement the CRUD actions for our Task Manager app. For a quick explanation of MVC, please read through [this](https://medium.freecodecamp.org/simplified-explanation-to-mvc-5d307796df30) post.
 
 Throughout the module, we'll talk through some conventions and best practices, but for now - we'd like for you to follow along with this tutorial. We highly recommend **not** copying and pasting the code in this tutorial. It's to your advantage to type each line of code on your own. 
 
