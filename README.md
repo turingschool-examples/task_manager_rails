@@ -298,6 +298,8 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 
 Here we have a form with an action (url path) of /tasks and a method of post. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
 
+_side note_: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails.  If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
+
 Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
 
 Try clicking the submit button. You should get a `No route matches [POST] "/tasks"` error because we haven't set up a route in our app to handle this method/action (POST '/tasks') combination from the form submission.
@@ -933,11 +935,15 @@ Congrats! You have finished your first Rails app that can handle full CRUD funct
 ## CFU
 
 1. Define CRUD.
-2. Explain the difference between value and name in this line: <input type='text' name='task[title]' value="<%= @task.title %>"/>.
+2. Explain the difference between value and name in this line: `<input type='text' name='task[title]' value="<%= @task.title %>"/>`.
 3. What are params? Where do they come from?
 4. Check out your routes. Why do we need two routes each for creating a new Task and editing an existing Task?
 
 
+
+### Completed Repository
+
+If you had any trouble getting things working as described, or if you are just wanting to see exactly what your files should look like at the end of the tutorial, you can take a look at a completed version [here](https://github.com/turingschool-examples/task_manager_rails_complete)
 
 
 
