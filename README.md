@@ -9,13 +9,13 @@ What does CRUD (in the the programming world) stand for?
 * U: Update
 * D: Delete
 
-The apps that you will be creating in Mod 2 will make heavy use of these four actions. 
+The apps that you will be creating in Mod 2 will make heavy use of these four actions.
 
 Let's use Rails to build an application where we can manage some tasks.
 
 We're going to follow the MVC design pattern, which Rails uses by default, to implement the CRUD actions for our Task Manager app. For a quick explanation of MVC, please read through [this](https://medium.freecodecamp.org/simplified-explanation-to-mvc-5d307796df30) post.
 
-Throughout the module, we'll talk through some conventions and best practices, but for now - we'd like for you to follow along with this tutorial. We highly recommend **not** copying and pasting the code in this tutorial. It's to your advantage to type each line of code on your own. 
+Throughout the module, we'll talk through some conventions and best practices, but for now - we'd like for you to follow along with this tutorial. We highly recommend **not** copying and pasting the code in this tutorial. It's to your advantage to type each line of code on your own.
 
 ## Getting Configured
 
@@ -117,7 +117,7 @@ You should see something like this:
 
 ```
 => Booting Puma
-=> Rails 5.1.7 application starting in development 
+=> Rails 5.1.7 application starting in development
 => Run `rails server -h` for more startup options
 Puma starting in single mode...
 * Version 3.12.1 (ruby 2.4.1-p111), codename: Llamas in Pajamas
@@ -127,7 +127,7 @@ Puma starting in single mode...
 Use Ctrl-C to stop
 ```
 
-Navigate to [http://localhost:3000/](http://localhost:3000/) and you should see some Rails magic! 
+Navigate to [http://localhost:3000/](http://localhost:3000/) and you should see some Rails magic!
 
 Now, let's take a look back at your terminal and walkthrough what just happened.
 
@@ -159,18 +159,18 @@ Rails.application.routes.draw do
 end
 ```
 
-This line that we added is telling our application that anytime we receive a `GET` request for the URI `'/'`, we should perform the `index` action within our `welcome` controller.  If this sentence was complete nonsense to you, go back and review [How the Web Works](https://github.com/turingschool/intermission-assignments/blob/master/2be/details/how_the_web_works.md) and [Intro to MVC](https://github.com/turingschool/backend-curriculum-site/blob/gh-pages/module2/lessons/intro_to_mvc.md). If you don't feel like you have a full grasp on _exactly_ what is going on here, that's ok, we will be reiterating a practicing these concepts throughout the Mod.
+This line that we added is telling our application that anytime we receive a `GET` request for the URI `'/'`, we should perform the `index` action within our `welcome` controller.  If this sentence was complete nonsense to you, go back and review [How the Web Works](https://github.com/turingschool/intermission-assignments/blob/master/2be/details/how_the_web_works.md) and [Intro to MVC](https://github.com/turingschool/backend-curriculum-site/blob/gh-pages/module2/lessons/intro_to_mvc.md). If you don't feel like you have a full grasp on _exactly_ what is going on here, that's ok, we will be reiterating and practicing these concepts throughout the Mod.
 
-Go back to your browser and refresh the page - you should now be seeing an error telling you that you have a `Routing Error`; specifically, that you have an `uninitialized constant Welcome Controller`.  This is a good thing; at this point, we have told our application which controller action to perferm when this request is received, but we haven't created that controller (or the action) yet.  So, let's go do that.
+Go back to your browser and refresh the page - you should now be seeing an error telling you that you have a `Routing Error`; specifically, that you have an `uninitialized constant WelcomeController`.  This is a good thing; at this point, we have told our application which controller action to perform when this request is received, but we haven't created that controller (or the action) yet.  So, let's go do that.
 
-Open your `controllers` directory and create a file inside called `welcome_controller.rb`.  In that file, add the following code (remember that it is *strongly* recommended that you not copy/paste, but practice typing out this code).
+Open your `app/controllers` directory and create a file inside called `welcome_controller.rb`.  In that file, add the following code (remember that it is *strongly* recommended that you not copy/paste, but practice typing out this code).
 
 ```ruby
 # app/controllers/welcome_controller.rb
 
 class WelcomeController < ApplicationController
 
-  
+
 end
 ```
 
@@ -186,9 +186,9 @@ class WelcomeController < ApplicationController
 end
 ```
 
-Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for this request`.  Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser it the response body.  It was expecting to find some HMTL that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
+Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for this request`.  Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser in the response body.  It was expecting to find some HMTL that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
 
-In your views directory, add a sub-directory called `welcome` and, within that directory, a file called `index.html.erb`.  When creating views, we name the files the same as our action: `def index` to `index.html.erb`. And, those files will live in a directory with the same name as our controller: `WelcomeController` to `views/welcome/`.
+In your `app/views` directory, add a sub-directory called `welcome` and, within that directory, a file called `index.html.erb`.  When creating views, we name the files the same as our action: `def index` to `index.html.erb`. And, those files will live in a directory with the same name as our controller: `WelcomeController` to `views/welcome/`. The path for your new file should be `app/views/welcome/index.html.erb`.
 
 In that file, add the following HTML:
 
@@ -223,7 +223,7 @@ Rails.application.routes.draw do
 end
 ```
 
-Thinking back to the welcome page that we created, what are our next steps to get this route to work properly? In order to display an error free view, we will need to add a `Tasks Controller`, an `index` action in that controller, and an `index.html.erb` file for that controller action.
+Thinking back to the welcome page that we created, what are our next steps to get this route to work properly? In order to display an error free view, we will need to add a `TasksController`, an `index` action in that controller, and an `index.html.erb` file for that controller action.
 
 First, add a new controller to your controllers directory called `tasks_controller.rb`
 
@@ -237,7 +237,13 @@ class TasksController < ApplicationController
 end
 ```
 
-Now, have a Tasks Controller with an index action that is holding on to a list of tasks in our instance variable `@tasks`.  Rails allows us to set up instance variables in our controllers to send information down to our views.  To see this in action, let's create a new view: `app/views/tasks/index.html.erb` and put the following code inside:
+Now, we have a Tasks Controller with an index action that is holding on to a list of tasks in our instance variable `@tasks`.  Rails allows us to set up instance variables in our controllers to send information down to our views.  To see this in action, let's create a new view: `app/views/tasks/index.html.erb` and put the following code inside:
+
+```erb
+<%= @tasks %>
+```
+
+Wait, what's this new  `<%= %>` syntax? This is called an `erb` tag - erb stands for 'embedded ruby'.  A combination of our file format `.html.erb` and the use of these tags allows us to execute ruby code directly in our html files. erb tags have access to any instance variables created in our controller action, so thats how we are able to access `@tasks`. Refresh your page and you will see your array displayed as... an array. Let's add some more formatting to our view:
 
 ```erb
 <h1>All Tasks</h1>
@@ -247,7 +253,7 @@ Now, have a Tasks Controller with an index action that is holding on to a list o
 <% end %>
 ```
 
-Before we take a look at our browser again, let's dig into these tags: `<%= %>` and `<% %>`.  Both sets are called erb tags - erb stands for 'embedded ruby'.  A combination of our file format `.html.erb` and the use of these tags allows us to execute ruby code directly in our html files.  The difference between the two is that `<%= %>` will echo (or display) the return value of the ruby commands in your view, and the `<% %>` will not echo (or display) the return value of the ruby commands.  So, in the view that we just created, we *do* want the user to see the return value of each `task` in a `h3` tag, but we *do not* want the user to see the return value of the `each` method.
+Remember, with erb tags, we can run any Ruby code, including an `.each`! Notice how the `each`/`end` is in a slightly different erb tag, `<% %>`, that doesn't have the `=`. The difference between the two is that `<%= %>` will echo (or display) the return value of the ruby commands in your view, and the `<% %>` will not echo (or display) the return value of the ruby commands.  So, in the view that we just created, we *do* want the user to see the return value of each `task` in a `h3` tag, but we *do not* want the user to see the return value of the `each` method. Try to change the tag for the each to `<%= %>` and see what happens (make sure to change it back).
 
 Refresh your browser and check that our tasks are showing up - our index view is in ok shape now.
 
@@ -267,7 +273,7 @@ Rails.application.routes.draw do
 end
 ```
 
-And then in our tasks controller: 
+And then in our tasks controller:
 
 ```ruby
 # app/controllers/tasks_controller.rb
@@ -296,7 +302,7 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 </form>
 ```
 
-Here we have a form with an action (url path) of /tasks and a method of post. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
+Here we have a form with an action (url path) of `/tasks` and a method of `post`. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
 
 _side note_: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails.  If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
 
@@ -313,7 +319,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   get '/', to: 'welcome#index'
-  
+
   get '/tasks', to: 'tasks#index'
   get '/tasks/new', to: 'tasks#new'
   post '/tasks', to: 'tasks#create'
@@ -391,7 +397,7 @@ From: /Users/meganmcmahon/turing/staff/1901M2/task_manager/app/controllers/tasks
      9: def create
  => 10:   binding.pry
     11: end
-    
+
  [1] pry(#<TasksController>)>
 ```
 
@@ -431,7 +437,7 @@ Rails has taken the parameters that we received in this request and turned it in
 
 Taking a look at the commands and their results above, can you spot a difference between the Hashes that you worked with in Mod1 and the params object that rails builds for us?
 
-When working with a Ruby Hash, we use the key *exacly* as it is createe in order to access the value at that location - if a key is set up as a String, we must use a String to access the value.  But, with our Rails params object, we can use either a String, or a Symbol to access values of a specific key.  At this point, it is important to understand this only because it is conventional to use a symbol to access these values, and that is what we will be doing for this tutorial, and in Mod2.
+When working with a Ruby Hash, we use the key *exactly* as it is created in order to access the value at that location - if a key is set up as a String, we must use a String to access the value.  But, with our Rails params object, we can use either a String or a Symbol to access values of a specific key.  At this point, it is important to understand this only because it is conventional to use a symbol to access these values, and that is what we will be doing for this tutorial, and in Mod2.
 
 Go back to your terminal and `exit` your pry session to complete the response we interrupted:
 
@@ -557,7 +563,7 @@ Type "help" for help.
 
 task_manager_development=# SELECT * FROM tasks;
 
- id | title | description 
+ id | title | description
 ----+-------+-------------
 (0 rows)
 ```
@@ -583,7 +589,7 @@ Now that we have our Task model created and our database ready to hold on to new
     redirect_to '/tasks'
   end
  ```
- 
+
  Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new), fill out our form, and click 'Submit'. In our terminal, we should have hit our first pry - let's make sure we have access to the information we need to create a new task:
 
 ```
@@ -679,8 +685,7 @@ Let's see if we can show some individual tasks. At this point we should be able 
   * Add a route for an individual task
   * In our controller, find a specific task to send to a view
   * Create a view to show details for a specific task
-  * Add links to our index view to aid in navigating to a specifc task
-  
+
 ### Add a Link to an Individual Task
 
 From a users perspective, it makes the most sense to have a link to each task directly from the tasks index page.  Let's update our `views/tasks/index.html.erb` to include this link:
@@ -691,14 +696,15 @@ From a users perspective, it makes the most sense to have a link to each task di
 <% @tasks.each do |task| %>
   <h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
   <p><%= task.description %></p>
-  <a href="/tasks/<%= task.id  %>/edit">Edit</a>
 <% end %>
 ```
+
+Notice how we can use erb to embed ruby into html attributes. This is a very powerful feature that we will use a lot.
 
 Now, when we visit [http://localhost:3000/tasks](http://localhost:3000/tasks), instead of seeing just a plain text of each tasks title, we will see that title as a link to an individual task's show page.
 
 But that link won't work just yet!
-  
+
 ### Add a Route and Controller Action for an Individual Task
 
 In our `conig/routes.rb` file, add the following route:
@@ -706,10 +712,11 @@ In our `conig/routes.rb` file, add the following route:
 ```ruby
 # config/routes.rb
 
-get '/tasks/:id`, to: "tasks#show"
+get '/tasks/:id', to: "tasks#show"
 ```
+
 And in our `tasks_controller.rb` add a show action:
-we h
+
 ```ruby
 # app/controllers/tasks_controller.rb
 
@@ -736,13 +743,13 @@ In our views folder, create a file for `views/tasks/show.html.erb` and put the f
 
 Now, we have a show page that will show the information for a specific task, as well as a link back to the task index page.
 
-Let's see if we have accomplished our goal - navigate to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1) and let's see what happens. 
+Let's see if we have accomplished our goal - navigate to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1) and let's see what happens.
 
 More errors!  We should be seeing an error message telling us that we have a `NoMethodError in Tasks#show`, and if we look more closely, we are specifically seeing an `undefined method 'title' for nil:NilClass`.  Thinking back to the errors we have seen in Mod1 - this is telling us that we are calling a method, `title` on a `nil`; in other words, `@task` is not holding on to a specific task that we can call `title` and `description` on.
 
 ### Finding Specific Tasks
 
-Let's look back at our show action in our tasks controller and see if we can set up our instance variable `@tasks`.  Remember  when we talked about how we are inheriting some functionality from ActiveRecord that helps us interact with our database?  Well, now's a great place to take advantage of the ActiveRecord method `find`, which will retreive a record from our database based on that record's id.  In this case, we can use find like this:
+Let's look back at our show action in our tasks controller and see if we can set up our instance variable `@task`.  Remember  when we talked about how we are inheriting some functionality from ActiveRecord that helps us interact with our database?  Well, now's a great place to take advantage of the ActiveRecord method `find`, which will retreive a record from our database based on that record's id.  In this case, we can use find like this:
 
 ```ruby
 # app/controllers/tasks_controller.rb
@@ -785,14 +792,14 @@ Remember that you will need to `exit` your pry session to continue interacting w
 
 At this point, we have an application that will allow us to visit a home page, see a list of tasks, add a task, and see a specific task. We have covered the Create and Read portions of CRUD. Now, let's add some functionality to be able to Update existing tasks.
 
-This updateing will be very similar to creating new tasks.  At a high level, we will need to:
+This updating will be very similar to creating new tasks.  At a high level, we will need to:
 
   * Create a button to edit a specific task
   * Create a route that will GET us an edit form
     * Add the action and views for this route
   * Create a route that will PATCH a specific task based on form input
     * Add the action that will accomplish this update and redirect the user
-    
+
 ### Add an Edit Button to the Show Page
 
 To make our user experience as smooth as possible, let's create a link to 'Edit' a specific task - similar to the link we created to add a new task.
@@ -810,8 +817,8 @@ In our `show.html.erb` file, update the code to include an edit link:
 ```
 
 Now, when a user navigates to [http://localhost:3000/tasks/1](http://localhost:3000/tasks/1), they will see a link to 'Edit'.  If they click on that link, a `GET` request will be sent to the URI `tasks/:id/edit`.  As of now, that route doesn't exist - let's create it!
-    
-### Creating the Route, Controller Action, and View 
+
+### Creating the Route, Controller Action, and View
 
 In our `config/routes.rb` file, add the following route:
 
@@ -827,7 +834,7 @@ def edit
 end
 ```
 
-Now, we need a view!  This will be similar, but not exactly the same as the view we created for the `new` action. We will need to create the following HTML in `views/tasks/edit.html.erb`: 
+Now, we need a view!  This will be similar, but not exactly the same as the view we created for the `new` action. We will need to create the following HTML in `views/tasks/edit.html.erb`:
 
 ```erb
 <form action="/tasks/<%= @task.id %>" method="post">
@@ -842,7 +849,7 @@ Now, we need a view!  This will be similar, but not exactly the same as the view
 
 The way that we have set up this form, including the `@task.title` and `@task.description` as field values, will autofill our form with the current task information, so that a user can update one or both fields and maintain any unchanged information.
 
-Additionally, you'll notice that there's a hidden field with a value of PUT. Normally, HTML forms only allow GET or POST requests (see more information [here])(http://www.w3schools.com/tags/att_form_method.asp).
+Additionally, you'll notice that there's a hidden field with a value of PATCH. Normally, HTML forms only allow GET or POST requests (see more information [here])(http://www.w3schools.com/tags/att_form_method.asp).
 
 We're going to want this form to access a route in our controller (that we'll create momentarily) using PATCH to be consistent with conventions about the HTTP verb that is used when updating a resource (take a quick look at [this](https://www.restapitutorial.com/lessons/httpmethods.html) table if this is new information).
 
@@ -872,7 +879,7 @@ end
 
 There's a lot going on here - let's break it down.  
 
-Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action.  Then, we can use an ActiveRecord, `udpate` to change the object that ActiveRecord found and created for us.  Finally, we need to `save` the changes we made to that object in our database.  And, thinkging way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
+Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action.  Then, we can use an ActiveRecord `udpate` to change the object that ActiveRecord found and created for us.  Finally, we need to `save` the changes we made to that object in our database.  And, thinking way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
 
 Now that we have this edit functionality implented, make sure you have your server running, and play around with your new fancy form!
 
@@ -883,7 +890,7 @@ As of now, we have the Create, Read, and Update functions done - all we are miss
   * Add a button to delete a specific task
   * Add a route to handle the request to delete a task
   * Add a controller action to accomplish the delete
-  
+
 ### Add a Delete Button
 
 We don't need a form to delete a task, but we do need to know which task we want to delete, so we'll leverage a form to create a button that will send a `DELETE` request to a route with our task id.
@@ -905,14 +912,14 @@ Let's add this 'button' to our `tasks/index.html.erb`:
 <% end %>
 ```
 
-Now, if you take a look at our index page at [http://localhost:3000/tasks](http://localhost:3000/tasks), you should see a 'Delete' button for each task.  But, the button will throw an error - why? 
+Now, if you take a look at our index page at [http://localhost:3000/tasks](http://localhost:3000/tasks), you should see a 'Delete' button for each task.  But, the button will throw an error - why?
 
 ### Add a Delete Route and Controller Action
 
 When we click 'Delete' we gett an error - `No route matches [DELETE] "/tasks/1"`.  So, let's go add that route to our `config/routes.rb`:
 
 ```ruby
-DELETE '/tasks/:id`, to: 'tasks#destroy'
+DELETE '/tasks/:id', to: 'tasks#destroy'
 ```
 
 And, with this route, we will need to add a `destroy` action to our tasks controller:
@@ -944,8 +951,3 @@ Congrats! You have finished your first Rails app that can handle full CRUD funct
 ### Completed Repository
 
 If you had any trouble getting things working as described, or if you are just wanting to see exactly what your files should look like at the end of the tutorial, you can take a look at a completed version [here](https://github.com/turingschool-examples/task_manager_rails_complete)
-
-
-
-
-
