@@ -939,13 +939,13 @@ Now, we should be able to navigate to our tasks index at [http://localhost:3000/
 
 Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource!  We can now Create, Read, Update, and Delete tasks!
 
-## CFU
+## Checks for Understanding
 
 1. Define CRUD.
-2. Explain the difference between value and name in this line: `<input type='text' name='task[title]' value="<%= @task.title %>"/>`.
-3. What are params? Where do they come from?
-4. Check out your routes. Why do we need two routes each for creating a new Task and editing an existing Task?
-
+1. Define MVC.
+1. What three files would you need to create/modify for a Rails application to respond to a `GET` request to `/tasks`, assuming you have a `Task` model.
+1. What are params? Where do they come from?
+1. Check out your routes. Why do we need two routes each for creating a new Task and editing an existing Task?
 
 
 ### Completed Repository
