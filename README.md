@@ -919,7 +919,7 @@ Now, if you take a look at our index page at [http://localhost:3000/tasks](http:
 When we click 'Delete' we gett an error - `No route matches [DELETE] "/tasks/1"`.  So, let's go add that route to our `config/routes.rb`:
 
 ```ruby
-DELETE '/tasks/:id', to: 'tasks#destroy'
+delete '/tasks/:id', to: 'tasks#destroy'
 ```
 
 And, with this route, we will need to add a `destroy` action to our tasks controller:
