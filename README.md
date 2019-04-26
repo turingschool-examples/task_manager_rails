@@ -707,7 +707,7 @@ But that link won't work just yet!
 
 ### Add a Route and Controller Action for an Individual Task
 
-In our `conig/routes.rb` file, add the following route:
+In our `config/routes.rb` file, add the following route:
 
 ```ruby
 # config/routes.rb
