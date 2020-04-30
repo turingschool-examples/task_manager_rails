@@ -857,7 +857,7 @@ HTML won't allow us to use method='patch' in our form tag, but passing it as a h
 
 ### Updating a Task Resource
 
-Now, our application will need to know what to do when someone submits the edit form, making a `PATCH` request to `/tasks/:id`; so, in our `routes.config.rb`, let's add the following route:
+Now, our application will need to know what to do when someone submits the edit form, making a `PATCH` request to `/tasks/:id`; so, in our `config/routes.rb`, let's add the following route:
 
 ```ruby
 patch '/tasks/:id', to: 'tasks#update'
