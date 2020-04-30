@@ -849,7 +849,7 @@ Now, we need a view!  This will be similar, but not exactly the same as the view
 
 The way that we have set up this form, including the `@task.title` and `@task.description` as field values, will autofill our form with the current task information, so that a user can update one or both fields and maintain any unchanged information.
 
-Additionally, you'll notice that there's a hidden field with a value of PATCH. Normally, HTML forms only allow GET or POST requests (see more information [here])(http://www.w3schools.com/tags/att_form_method.asp).
+Additionally, you'll notice that there's a hidden field with a value of PATCH. Normally, HTML forms only allow GET or POST requests (see more information [here](http://www.w3schools.com/tags/att_form_method.asp).
 
 We're going to want this form to access a route in our controller (that we'll create momentarily) using PATCH to be consistent with conventions about the HTTP verb that is used when updating a resource (take a quick look at [this](https://www.restapitutorial.com/lessons/httpmethods.html) table if this is new information).
 
