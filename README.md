@@ -19,13 +19,13 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.1.x.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.1.x, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.2.4.3.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.2.4.3, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
 To create your rails app, navigate to your 2module directory and run the following command:
 
-`$ rails new task_manager -T -d="postgresql"`
+`$ rails new task_manager -T -d="postgresql" --skip-spring --skip-turbolinks`
 
 Let's break down this command to better understand what is happening.  `rails new` is the command to create a new Rails app - this will create *a lot* of directories and files; we will explore this file structure in a moment.  `task_manager` is going to be the name of the directory in which our Rails app lives and is, essentially, the name of our application. `-T` tells Rails that we are not going to use its default testing suite.  During the module, we will be using a new testing framework, RSpec, and will save that for class time. `-d="postgresql"` tells Rails that we will be using a postgresql database; Rails can handle many different databases, but this is the one we will be using in Mod2.
 
@@ -46,25 +46,22 @@ In addition to these directories, we will also be dealing with our Gemfile, whic
 
 ```ruby
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
-  "https://github.com/#{repo_name}.git"
-end
-
+ruby '2.5.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.7'
+gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.11'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
+# gem 'mini_racer', platforms: :ruby
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
@@ -77,8 +74,14 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
+# Use ActiveStorage variant
+# gem 'mini_magick', '~> 4.8'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
+
+# Reduces boot times through caching; required in config/boot.rb
+gem 'bootsnap', '>= 1.1.0', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -87,13 +90,14 @@ group :development, :test do
 end
 
 group :development do
-  # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
+  # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
+
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
@@ -109,7 +113,20 @@ Great - now we can use `binding.pry` anywhere in our app to debug as we go!
 
 ## Getting the App Running
 
-Before we can see what our new rails app can do, we will need to get our server up and running and ready for HTTP requests. To do this, run either
+Before we can see what our new rails app can do, we need to do some more set up. First, let's create our app's database. Do this from the command line with:
+
+`rails db:create`
+
+You should see some output like this:
+
+```
+Created database 'task_manager_development'
+Created database 'task_manager_test'
+```
+
+Notice how this created two databases.
+
+Now we will need to get our server up and running and ready for HTTP requests. To do this, run either
 
 `rails server` or `rails s`
 
@@ -117,10 +134,10 @@ You should see something like this:
 
 ```
 => Booting Puma
-=> Rails 5.1.7 application starting in development
+=> Rails 5.2.4.3 application starting in development
 => Run `rails server -h` for more startup options
 Puma starting in single mode...
-* Version 3.12.1 (ruby 2.4.1-p111), codename: Llamas in Pajamas
+* Version 3.12.6 (ruby 2.5.3-p105), codename: Llamas in Pajamas
 * Min threads: 5, max threads: 5
 * Environment: development
 * Listening on tcp://localhost:3000
@@ -129,14 +146,14 @@ Use Ctrl-C to stop
 
 Navigate to [http://localhost:3000/](http://localhost:3000/) and you should see some Rails magic!
 
-Now, let's take a look back at your terminal and walkthrough what just happened.
+Now, let's take a look back at your terminal and walk through what just happened.
 
 ```
-Started GET "/" for ::1 at 2019-04-13 14:38:02 -0600
-Processing by Rails::Welcome#index as HTML
-  Rendering /Users/meganmcmahon/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/railties-5.1.7/lib/rails/templates/rails/welcome/index.html.erb
-  Rendered /Users/meganmcmahon/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/railties-5.1.7/lib/rails/templates/rails/welcome/index.html.erb (2.6ms)
-Completed 200 OK in 254ms (Views: 9.1ms)
+Started GET "/" for ::1 at 2020-08-10 09:47:07 -0600
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /Users/brian/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/brian/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb (4.0ms)
+Completed 200 OK in 25ms (Views: 16.4ms | ActiveRecord: 0.0ms)
 ```
 
 On the first line, you are seeing a snapshot of the HTTP request that was received by our server when we navigated to localhost:3000 - `GET "/"`.  This is basically telling us that our application received a request for the information that lives at a certain address.
@@ -159,7 +176,7 @@ Rails.application.routes.draw do
 end
 ```
 
-This line that we added is telling our application that anytime we receive a `GET` request for the URI `'/'`, we should perform the `index` action within our `welcome` controller.  If this sentence was complete nonsense to you, go back and review [How the Web Works](https://github.com/turingschool/intermission-assignments/blob/master/2be/details/how_the_web_works.md) and [Intro to MVC](https://github.com/turingschool/backend-curriculum-site/blob/gh-pages/module2/lessons/intro_to_mvc.md). If you don't feel like you have a full grasp on _exactly_ what is going on here, that's ok, we will be reiterating and practicing these concepts throughout the Mod.
+This line that we added is telling our application that anytime we receive an HTTP `GET` request for the URI `'/'`, we should perform the `index` action within our `welcome` controller.  
 
 Go back to your browser and refresh the page - you should now be seeing an error telling you that you have a `Routing Error`; specifically, that you have an `uninitialized constant WelcomeController`.  This is a good thing; at this point, we have told our application which controller action to perform when this request is received, but we haven't created that controller (or the action) yet.  So, let's go do that.
 
@@ -203,7 +220,7 @@ In that file, add the following HTML:
 
 We have an h1 tag for our welcome message, then an unordered list (ul) with two list items (li) inside. If you are unfamiliar with HTML tags, try one of the HTML tutorials before continuing.
 
-Inside of each li tag, we have an a tag. The href of the tag is the path where the link will go. In the first a tag, the path will be [http://localhost:3000/tasks](http://localhost:3000/tasks). The second path will be [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new).
+Inside of each li tag, we have an `<a>` tag. The href of the tag is the path where the link will go. In the first a tag, the path will be [http://localhost:3000/tasks](http://localhost:3000/tasks). The second path will be [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new).
 
 Refresh your browser and you should now see an error-free view! What do you think will happen if you click on one of these links? More errors - but that's ok! We can use these errors to help guide us in our development.
 
@@ -243,7 +260,7 @@ Now, we have a Tasks Controller with an index action that is holding on to a lis
 <%= @tasks %>
 ```
 
-Wait, what's this new  `<%= %>` syntax? This is called an `erb` tag - erb stands for 'embedded ruby'.  A combination of our file format `.html.erb` and the use of these tags allows us to execute ruby code directly in our html files. erb tags have access to any instance variables created in our controller action, so thats how we are able to access `@tasks`. Refresh your page and you will see your array displayed as... an array. Let's add some more formatting to our view:
+Wait, what's this new  `<%= %>` syntax? This is called an `erb` tag - erb stands for 'embedded ruby'.  A combination of our file format `.html.erb` and the use of these tags allows us to execute ruby code directly in our html files. **erb tags have access to any instance variables created in our controller action**. So that's how we are able to access `@tasks`. Refresh your page and you will see your array displayed as... an array. Let's add some more formatting to our view:
 
 ```erb
 <h1>All Tasks</h1>
@@ -358,7 +375,7 @@ Completed 204 No Content in 94ms
 
 On the first line, we see that our app received a request to `POST` to `'/tasks'`. As our app started trying to handle this request, we eventually got to a point where there was no HTML to render, so Rails attempted to smooth over our user's experience by sending back a response indicating that there is no content in the response.  We see this on the second to last line above `No template found for TasksController#create, rendering head :no_content`.  And, instead of throwing an error, Rails has resolved this response with a successful status code: `Completed 204 No Content`.
 
-The reason that Rails has provided this _magic_ for us, instead of throwing an error, is because Rails is assuming that when any new record is created, we will want to redirect our user's to some new place where they can see this change in place.  Rails will assume that for any POST, PATCH, PUT, and DELETE request, we will want to send a redirect in our response.  So, for these requests and their controller actions, Rails will not error if there is no corresponding HTML in our views folder!
+The reason that Rails has provided this _magic_ for us, instead of throwing an error, is because Rails is assuming that when any new record is created, we will want to redirect our user's to some new place where they can see this change in place.  Rails will assume that for any HTTP POST, PATCH, PUT, and DELETE request, we will want to send a redirect in our response.  So, for these requests and their controller actions, Rails will not error if there is no corresponding HTML in our views folder!
 
 Now let's get back to actually creating this new task. Looking back at our terminal output from submitting the form, there is a bunch of stuff right in the middle that we have not yet discussed.  Specifically, let's take a look at the `parameters: ` section of the output:
 
@@ -493,20 +510,22 @@ Why inherit from `ApplicationRecord`?  This Task class that we are creating is m
 
 When we use the `new` method, Rails is going to attempt to create an object with attributes that match up to column names that exist in a `tasks` table in our database; and, when we attempt to `save` that object, Rails will try to `INSERT` a new record in our database with those attributes. Can you see where we might run into problems? We haven't set up our database yet, much less any tables in that database!
 
-### Creating Our Database
+### Setting Up Our Database
 
-To create our database and connect it to our rails application, go back to your terminal and shut down your server if it is still running, with ctrl+c.  Then run the following command:
+Remember earlier that we created our database with this command:
 
 ```
 $ rails db:create
 ```
 
-You should see the following output:
+And got this output:
 
 ```
 Created database 'task_manager_development'
 Created database 'task_manager_test'
 ```
+
+We have created two databases, a "development" and a "test" database. In this tutorial, we won't be writing any tests so we won't touch our test database. We are working in the "development" environment.
 
 Great, now our database is created!  But, we don't have any tables yet.
 
@@ -519,13 +538,13 @@ Migrations allow you to evolve your database structure over time. Each migration
 To create a migration that will send instructions to create a tasks table to our database, run the following command from your terminal:
 
 ```
-$ rails g migration CreateTask title:string description:string
+$ rails generate migration CreateTask title:string description:string
 ```
 
-In this command, we are telling rails to generate `g` a migration file that will create a tasks table in our database with two columns - title and description.  To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`.  Open that file and you will see the following:
+In this command, we are telling rails to generate a migration file that will create a tasks table in our database with two columns - title and description.  To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`.  Open that file and you will see the following:
 
 ```ruby
-class CreateTask < ActiveRecord::Migration[5.1]
+class CreateTask < ActiveRecord::Migration[5.2]
   def change
     create_table :tasks do |t|
       t.string :title
@@ -555,7 +574,7 @@ Great!  How can we verify that worked?
 In your terminal, connect to the database that we just created, and see if we can select some information from our tasks table:
 
 ```
-$ psql -d task_manager_development
+$ rails dbconsole
 ```
 ```
 psql (10.1)
@@ -570,7 +589,7 @@ task_manager_development=# SELECT * FROM tasks;
 
 Awesome - we have a database with a table for tasks! No records yet, but that's ok - all we needed to know was that our database is up a configured correctly.
 
-To exit psql, use `\q`
+To exit the psql session, enter the command `exit`
 
 ### Writing to our Database
 
@@ -667,6 +686,8 @@ In the same way that we inherited methods to create database records, we have al
 Now, refresh your browser - what do you see? You are now seeing... something... but not really what we expected, right? Before, we were sending an array of strings to our view and that view was iterating over the array and creating a list of all the things in that array.  It is still doing that, but now, the things that are in the array are objects, not just strings, so the way we treat them will be slightly different.  Go to your index view and change it to work with task objects instead.
 
 ```erb
+# app/views/tasks/index.html.erb
+
 <h1>All Tasks</h1>
 
 <% @tasks.each do |task| %>
@@ -675,7 +696,7 @@ Now, refresh your browser - what do you see? You are now seeing... something... 
 <% end %>
 ```
 
-Refresh your browser, and now you should see something that looks a bit nicer.
+Refresh your browser and you should see your new task!
 
 ## Showing Individual Tasks
 
@@ -688,7 +709,7 @@ Let's see if we can show some individual tasks. At this point we should be able 
 
 ### Add a Link to an Individual Task
 
-From a users perspective, it makes the most sense to have a link to each task directly from the tasks index page.  Let's update our `views/tasks/index.html.erb` to include this link:
+From a users perspective, it makes the most sense to have a link to each task directly from the tasks index page.  Let's update our `app/views/tasks/index.html.erb` to include this link:
 
 ```erb
 <h1>All Tasks</h1>
@@ -729,7 +750,7 @@ end
 
 Before we get to what will live inside this show action, let's dream up what we might want to be in our view for this action.
 
-In our views folder, create a file for `views/tasks/show.html.erb` and put the following HTML inside it:
+In our views folder, create a file for `app/views/tasks/show.html.erb` and put the following HTML inside it:
 
 ```erb
 # app/views/tasks/show.html.erb
@@ -749,7 +770,7 @@ More errors!  We should be seeing an error message telling us that we have a `No
 
 ### Finding Specific Tasks
 
-Let's look back at our show action in our tasks controller and see if we can set up our instance variable `@task`.  Remember  when we talked about how we are inheriting some functionality from ActiveRecord that helps us interact with our database?  Well, now's a great place to take advantage of the ActiveRecord method `find`, which will retreive a record from our database based on that record's id.  In this case, we can use find like this:
+Let's look back at our show action in our tasks controller and see if we can set up our instance variable `@task`.  Remember  when we talked about how we are inheriting some functionality from ActiveRecord that helps us interact with our database?  Well, now's a great place to take advantage of the ActiveRecord method `find`, which will retrieve a record from our database based on that record's id.  In this case, we can use find like this:
 
 ```ruby
 # app/controllers/tasks_controller.rb
@@ -784,7 +805,7 @@ Refresh your browser and take a look at your terminal.  In your pry session, cal
 => <ActionController::Parameters {"controller"=>"tasks", "action"=>"show", "id"=>"1"} permitted: false>
 ```
 
-We are getting a much simpler params object than when we used a form, and these params include an `:id` that matches with the very end of the uri we visited (/tasks/1).  Looking at our routes, we see that we set up our URI pattern to accept `:id`, but when we visited this site, we typed in `1` which is an actual id that exists in our database.  When we need to get some infomration, like an id, from our route in the form of parameters, we can include a symbol of the thing we are expecting when we set up our route - in this case, we are expecting an `:id`.  So, based on how we set up our routes, we can manipulate and dictate what parameters we want; and what information we will need access to in our controllers.
+We are getting a much simpler params object than when we used a form, and these params include an `:id` that matches with the very end of the uri we visited (/tasks/1).  Looking at our routes, we see that we set up our URI pattern to accept `:id`, but when we visited this site, we typed in `1` which is an actual id that exists in our database.  When we need to get some information, like an id, from our route in the form of parameters, we can include a symbol of the thing we are expecting when we set up our route - in this case, we are expecting an `:id`.  So, based on how we set up our routes, we can manipulate and dictate what parameters we want; and what information we will need access to in our controllers.
 
 Remember that you will need to `exit` your pry session to continue interacting with your site!
 
@@ -797,7 +818,7 @@ This updating will be very similar to creating new tasks.  At a high level, we w
   * Create a button to edit a specific task
   * Create a route that will GET us an edit form
     * Add the action and views for this route
-  * Create a route that will PATCH a specific task based on form input
+  * Create a route that will update a specific task based on form input
     * Add the action that will accomplish this update and redirect the user
 
 ### Add an Edit Button to the Show Page
@@ -849,11 +870,9 @@ Now, we need a view!  This will be similar, but not exactly the same as the view
 
 The way that we have set up this form, including the `@task.title` and `@task.description` as field values, will autofill our form with the current task information, so that a user can update one or both fields and maintain any unchanged information.
 
-Additionally, you'll notice that there's a hidden field with a value of PATCH. Normally, HTML forms only allow GET or POST requests (see more information [here])(http://www.w3schools.com/tags/att_form_method.asp).
+Additionally, you'll notice that there's a hidden field with a value of PATCH. So far in our Routes, we have used GET requests to retrieve data and POST requests to create data. Now we are going to use a PATCH request to update data. Normally, HTML forms only allow GET or POST requests (see more information [here](http://www.w3schools.com/tags/att_form_method.asp)). HTML won't allow us to use method='patch' in our form tag, but passing it as a hidden value gives our app the information it needs to route the request correctly.
 
-We're going to want this form to access a route in our controller (that we'll create momentarily) using PATCH to be consistent with conventions about the HTTP verb that is used when updating a resource (take a quick look at [this](https://www.restapitutorial.com/lessons/httpmethods.html) table if this is new information).
-
-HTML won't allow us to use method='patch' in our form tag, but passing it as a hidden value gives our app the information it needs to route the request correctly.
+Why do we want this to be a PATCH request? In a word, convention. Take a quick look at [this](https://www.restapitutorial.com/lessons/httpmethods.html)
 
 ### Updating a Task Resource
 
@@ -881,7 +900,7 @@ There's a lot going on here - let's break it down.
 
 Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action.  Then, we can use an ActiveRecord `udpate` to change the object that ActiveRecord found and created for us.  Finally, we need to `save` the changes we made to that object in our database.  And, thinking way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
 
-Now that we have this edit functionality implented, make sure you have your server running, and play around with your new fancy form!
+Now that we have this edit functionality implemented, make sure you have your server running, and play around with your new fancy form!
 
 ## Deleting a Task
 
