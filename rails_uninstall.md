@@ -16,7 +16,7 @@ You may be asked if you are _sure_ about uninstalling specific gems that rails i
 Once you have uninstalled rails and its railties, you can then install the appropriate version with:
 
 ```
-$ gem install rails -v 5.2.3
+$ gem install rails -v 5.2.x
 ```
 
 And run `$ rails -v` to confirm you now have the correct version!
