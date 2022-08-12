@@ -19,7 +19,7 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.2.6.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.2.6, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.2.8.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.2.8, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
@@ -48,10 +48,10 @@ In addition to these directories, we will also be dealing with our Gemfile, whic
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.5.3'
+ruby '2.7.4'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.6', '>= 5.2.4.3'
+gem 'rails', '~> 5.2.8', '>= 5.2.8.1'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
@@ -65,8 +65,6 @@ gem 'uglifier', '>= 1.3.0'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -93,9 +91,6 @@ group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
 
@@ -134,10 +129,10 @@ You should see something like this:
 
 ```
 => Booting Puma
-=> Rails 5.2.6.3 application starting in development
+=> Rails 5.2.8 application starting in development
 => Run `rails server -h` for more startup options
 Puma starting in single mode...
-* Version 3.12.6 (ruby 2.5.3-p105), codename: Llamas in Pajamas
+* Version 3.12.6 (ruby 2.7.4-p191), codename: Llamas in Pajamas
 * Min threads: 5, max threads: 5
 * Environment: development
 * Listening on tcp://localhost:3000
@@ -151,8 +146,8 @@ Now, let's take a look back at your terminal and walk through what just happened
 ```
 Started GET "/" for ::1 at 2020-08-10 09:47:07 -0600
 Processing by Rails::WelcomeController#index as HTML
-  Rendering /Users/brian/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb
-  Rendered /Users/brian/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb (4.0ms)
+  Rendering /Users/brian/.rbenv/versions/2.7.4/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/brian/.rbenv/versions/2.7.4/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb (4.0ms)
 Completed 200 OK in 25ms (Views: 16.4ms | ActiveRecord: 0.0ms)
 ```
 
