@@ -33,7 +33,7 @@ Now that we have created our rails app, let's `cd task_manager` and explore so
 
 ## Project Folder Structure
 
-![Untitled](Task%20Manager%207%2059a9c173a95046f6961334f8efb94796/Untitled.png)
+![Untitled](https://camo.githubusercontent.com/d5fb50ebd04f8b58a9a5be7a37103acf6cc317048c5b253db7c1bc0ade5fd51b/68747470733a2f2f692e696d6775722e636f6d2f644858765244342e706e673f31)
 
 Taking a look at the files that rails creates can be a bit overwhelming at first, but don't worry - this tutorial will only touch on a handful of directories! The top level directories that we are concered with are:
 
