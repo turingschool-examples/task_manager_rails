@@ -19,7 +19,7 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 5.2.8.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 5.2.8, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails.  For this tutorial, you will want to be running Rails 7.0.4.  To check which version of rails you have installed, run `$ rails -v`.  If you see any version other than 7.0.4.x, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
@@ -45,57 +45,72 @@ Taking a look at the files that rails creates can be a bit overwhelming at first
 In addition to these directories, we will also be dealing with our Gemfile, which is where we will tell Rails about any other gems we might need to run our app. For our task manager we will be adding just one gem to our Gemfile. Open your gemfile and add `pry` to the `:development, :test` group - your Gemfile should now look like this:
 
 ```ruby
-source 'https://rubygems.org'
+source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.4'
+ruby "3.1.1"
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.8', '>= 5.2.8.1'
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 7.0.4", ">= 7.0.4.3"
+
+# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
+gem "sprockets-rails"
+
 # Use postgresql as the database for Active Record
-gem 'pg', '>= 0.18', '< 2.0'
-# Use Puma as the app server
-gem 'puma', '~> 3.11'
-# Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'mini_racer', platforms: :ruby
+gem "pg", "~> 1.1"
 
-# Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.2'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.5'
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", "~> 5.0"
+
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem "importmap-rails"
+
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+# gem "redis", "~> 4.0"
 
-# Use ActiveStorage variant
-# gem 'mini_magick', '~> 4.8'
+# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
+# gem "kredis"
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+# gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.1.0', require: false
+gem "bootsnap", require: false
+
+# Use Sass to process CSS
+# gem "sassc-rails"
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+# gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'pry'
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "pry"
 end
 
 group :development do
-  # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+
+  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # gem "rack-mini-profiler"
+
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem "spring"
 end
-
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 ```
 
 Any time we update our Gemfile, we will need to tell our application to install or update the additional gems.  In your terminal, run the command:
@@ -129,13 +144,16 @@ You should see something like this:
 
 ```
 => Booting Puma
-=> Rails 5.2.8 application starting in development
-=> Run `rails server -h` for more startup options
+=> Rails 7.0.4.3 application starting in development 
+=> Run `bin/rails server --help` for more startup options
 Puma starting in single mode...
-* Version 3.12.6 (ruby 2.7.4-p191), codename: Llamas in Pajamas
-* Min threads: 5, max threads: 5
-* Environment: development
-* Listening on tcp://localhost:3000
+* Puma version: 5.6.5 (ruby 3.1.1-p18) ("Birdie's Version")
+*  Min threads: 5
+*  Max threads: 5
+*  Environment: development
+*          PID: 15455
+* Listening on http://127.0.0.1:3000
+* Listening on http://[::1]:3000
 Use Ctrl-C to stop
 ```
 
@@ -144,16 +162,17 @@ Navigate to [http://localhost:3000/](http://localhost:3000/) and you should see 
 Now, let's take a look back at your terminal and walk through what just happened.
 
 ```
-Started GET "/" for ::1 at 2020-08-10 09:47:07 -0600
+Started GET "/" for ::1 at 2023-04-09 14:00:40 -0400
+  ActiveRecord::SchemaMigration Pluck (2.0ms)  SELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC
 Processing by Rails::WelcomeController#index as HTML
-  Rendering /Users/brian/.rbenv/versions/2.7.4/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb
-  Rendered /Users/brian/.rbenv/versions/2.7.4/lib/ruby/gems/2.5.0/gems/railties-5.2.4.3/lib/rails/templates/rails/welcome/index.html.erb (4.0ms)
-Completed 200 OK in 25ms (Views: 16.4ms | ActiveRecord: 0.0ms)
+  Rendering /Users/{username}/.rbenv/versions/3.1.1/lib/ruby/gems/3.1.0/gems/railties-7.0.4.3/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/{username}/.rbenv/versions/3.1.1/lib/ruby/gems/3.1.0/gems/railties-7.0.4.3/lib/rails/templates/rails/welcome/index.html.erb (Duration: 1.4ms | Allocations: 635)
+Completed 200 OK in 10ms (Views: 4.9ms | ActiveRecord: 0.0ms | Allocations: 5092)
 ```
 
 On the first line, you are seeing a snapshot of the HTTP request that was received by our server when we navigated to localhost:3000 - `GET "/"`.  This is basically telling us that our application received a request for the information that lives at a certain address.
 
-On the last line, we can see a snapshot of the response that our server sent back to the browser `Completed 200 OK`. Meaning, we received a request, were able to process that request and succesfully send back a response.  The response is what contains the information that allows the browser to render the page for `Yay! You're on Rails!`
+On the last line, we can see a snapshot of the response that our server sent back to the browser `Completed 200 OK`. Meaning, we received a request, were able to process that request and succesfully send back a response.  The response is what contains the information that allows the browser to render the page for the big red Rails logo.
 
 ## Using Views
 
@@ -165,7 +184,10 @@ The first thing we need to do, is tell our app how to handle specific requests, 
 # config/routes.rb
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  # root "articles#index"
 
   get '/', to: 'welcome#index'
 end
@@ -198,7 +220,7 @@ class WelcomeController < ApplicationController
 end
 ```
 
-Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for this request`.  Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser in the response body.  It was expecting to find some HMTL that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
+Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for this request`, plus a paragraph of useful explanation for this particular error.  Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser in the response body.  It was expecting to find some HTML that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
 
 In your `app/views` directory, add a sub-directory called `welcome` and, within that directory, a file called `index.html.erb`.  When creating views, we name the files the same as our action: `def index` to `index.html.erb`. And, those files will live in a directory with the same name as our controller: `WelcomeController` to `views/welcome/`. The path for your new file should be `app/views/welcome/index.html.erb`.
 
@@ -213,9 +235,9 @@ In that file, add the following HTML:
 </ul>
 ```
 
-We have an h1 tag for our welcome message, then an unordered list (ul) with two list items (li) inside. If you are unfamiliar with HTML tags, try one of the HTML tutorials before continuing.
+We have an `h1` tag for our welcome message, then an unordered list (`ul`) with two list items (`li`) inside. If you are unfamiliar with HTML tags, try one of the HTML tutorials before continuing.
 
-Inside of each li tag, we have an `<a>` tag. The href of the tag is the path where the link will go. In the first a tag, the path will be [http://localhost:3000/tasks](http://localhost:3000/tasks). The second path will be [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new).
+Inside of each `li` tag, we have an `<a>` tag. The `href` attribute of the tag is the path where the link will go. In the first `a` tag, the path will be [http://localhost:3000/tasks](http://localhost:3000/tasks). The second path will be [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new).
 
 Refresh your browser and you should now see an error-free view! What do you think will happen if you click on one of these links? More errors - but that's ok! We can use these errors to help guide us in our development.
 
@@ -228,7 +250,10 @@ First we need to update our `config/routes.rb` to handle a `GET '/tasks'` reques
 ```ruby
 # config/routes.rb
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  # root "articles#index"
 
   get '/', to: 'welcome#index'
   get '/tasks', to: 'tasks#index'
@@ -277,7 +302,10 @@ We need a route that will bring a user to a form where they can enter a new task
 # config/routes.rb
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  # root "articles#index"
 
   get '/', to: 'welcome#index'
   get '/tasks', to: 'tasks#index'
@@ -316,7 +344,7 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 
 Here we have a form with an action (url path) of `/tasks` and a method of `post`. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
 
-_side note_: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails.  If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
+_Side note_: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails.  If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
 
 Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
 
@@ -328,10 +356,12 @@ In our `routes.rb`:
 # config/routes.rb
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  # root "articles#index"
 
   get '/', to: 'welcome#index'
-
   get '/tasks', to: 'tasks#index'
   get '/tasks/new', to: 'tasks#new'
   post '/tasks', to: 'tasks#create'
@@ -539,14 +569,17 @@ $ rails generate migration CreateTask title:string description:string
 In this command, we are telling rails to generate a migration file that will create a tasks table in our database with two columns - title and description.  To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`.  Open that file and you will see the following:
 
 ```ruby
-class CreateTask < ActiveRecord::Migration[5.2]
+class CreateTasks < ActiveRecord::Migration[7.0]
   def change
     create_table :tasks do |t|
-      t.string :title
+      t.string :name
       t.string :description
+
+      t.timestamps
     end
   end
 end
+
 ```
 
 So, now we have a migration with some instructions to tell our database to create a tasks table, but how do we actually get the table created?  Run the following in your terminal:
@@ -572,19 +605,19 @@ In your terminal, connect to the database that we just created, and see if we ca
 $ rails dbconsole
 ```
 ```
-psql (10.1)
+psql (14.6)
 Type "help" for help.
 
 task_manager_development=# SELECT * FROM tasks;
 
- id | title | description
-----+-------+-------------
+ id | title | description | created_at | updated_at |
+----+-------+-------------+------------+------------+
 (0 rows)
 ```
 
 Awesome - we have a database with a table for tasks! No records yet, but that's ok - all we needed to know was that our database is up a configured correctly.
 
-To exit the psql session, enter the command `exit`
+To exit the psql session, enter the command `exit`.
 
 ### Writing to our Database
 
@@ -951,7 +984,7 @@ Now, we should be able to navigate to our tasks index at [http://localhost:3000/
 
 ### Finished!
 
-Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource!  We can now Create, Read, Update, and Delete tasks!
+Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource!  We can now Create, Read, Update, and Delete tasks! 🎉
 
 ## Checks for Understanding
 
@@ -964,4 +997,4 @@ Congrats! You have finished your first Rails app that can handle full CRUD funct
 
 ### Completed Repository
 
-If you had any trouble getting things working as described, or if you are just wanting to see exactly what your files should look like at the end of the tutorial, you can take a look at a completed version [here](https://github.com/turingschool-examples/task_manager_rails_complete)
+If you had any trouble getting things working as described, or if you are just wanting to see exactly what your files should look like at the end of the tutorial, you can take a look at a completed version [here](https://github.com/turingschool-examples/task-manager-7-complete).
