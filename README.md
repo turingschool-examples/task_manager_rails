@@ -842,7 +842,7 @@ In our `config/routes.rb` file, add the following route:
 get '/tasks/:id/edit', to: 'tasks#edit'
 ```
 
-And in our taks scontroller, add the following action:
+And in our tasks controller, add the following action:
 
 ```ruby
 def edit
