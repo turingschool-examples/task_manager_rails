@@ -19,7 +19,7 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails. For this tutorial, you will want to be running Rails 7.0.4. To check which version of rails you have installed, run `$ rails -v`. If you see any version other than 7.0.4, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails. For this tutorial, you will want to be running Rails 7.0.5. To check which version of rails you have installed, run `$ rails -v`. If you see any version other than 7.0.5, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
@@ -47,10 +47,10 @@ In addition to these directories, we will also be dealing with our Gemfile, whic
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.1"
+ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.0.4"
+gem "rails", "~> 7.0.5"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -143,10 +143,10 @@ You should see something like this:
 
 ```bash
 => Booting Puma
-=> Rails 7.0.4 application starting in development
+=> Rails 7.0.5 application starting in development
 => Run `bin/rails server --help` for more startup options
 Puma starting in single mode...
-* Puma version: 5.6.5 (ruby 3.1.1-p18) ("Birdie's Version")
+* Puma version: 5.6.5 (ruby 3.2.2-p18) ("Birdie's Version")
 *  Min threads: 5
 *  Max threads: 5
 *  Environment: development
@@ -163,8 +163,8 @@ Now, let's take a look back at your terminal and walk through what just happened
 ```bash
 Started GET "/" for ::1 at 2022-11-29 18:51:51 -0700
 Processing by Rails::WelcomeController#index as HTML
-  Rendering /Users/mdao/.rbenv/versions/3.1.1/lib/ruby/gems/3.1.0/gems/railties-7.0.4/lib/rails/templates/rails/welcome/index.html.erb
-  Rendered /Users/mdao/.rbenv/versions/3.1.1/lib/ruby/gems/3.1.0/gems/railties-7.0.4/lib/rails/templates/rails/welcome/index.html.erb (Duration: 1.4ms | Allocations: 635)
+  Rendering /Users/mdao/.rbenv/versions/3.2.2/lib/ruby/gems/3.1.0/gems/railties-7.0.5/lib/rails/templates/rails/welcome/index.html.erb
+  Rendered /Users/mdao/.rbenv/versions/3.2.2/lib/ruby/gems/3.1.0/gems/railties-7.0.5/lib/rails/templates/rails/welcome/index.html.erb (Duration: 1.4ms | Allocations: 635)
 Completed 200 OK in 13ms (Views: 4.9ms | ActiveRecord: 0.0ms | Allocations: 5094)
 ```
 
