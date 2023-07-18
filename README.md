@@ -351,8 +351,8 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 <form action="/tasks" method="post">
   <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
   <p>Enter a new task:</p>
-  <input type='text' name='task[title]'/><br/>
-  <textarea name='task[description]'></textarea><br/>
+  <input type='text' name='title'/><br/>
+  <textarea name='description'></textarea><br/>
   <input type='submit'/>
 </form>
 ```
@@ -413,7 +413,7 @@ Check out your terminal and you should see something like this:
 ```bash
 Started POST "/tasks" for 127.0.0.1 at 2022-11-29 23:05:39 -0700
 Processing by TasksController#create as TURBO_STREAM
-  Parameters: {"authenticity_token"=>"[FILTERED]", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+  Parameters: {"authenticity_token"=>"[FILTERED]", "title"=>"New Task", "description"=>"This is a new task!"}
 No template found for TasksController#create, rendering head :no_content
 Completed 204 No Content in 1ms (Allocations: 380)
 ```
@@ -425,10 +425,10 @@ The reason that Rails has provided this *magic* for us, instead of throwing an
 Now let's get back to actually creating this new task. Looking back at our terminal output from submitting the form, there is a bunch of stuff right in the middle that we have not yet discussed. Specifically, let's take a look at the `parameters:` section of the output:
 
 ```bash
-Parameters: {"authenticity_token"=>"[FILTERED]", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+Parameters: {"authenticity_token"=>"[FILTERED]", "title"=>"New Task", "description"=>"This is a new task!"}
 ```
 
-Looking through this information, there are a few things we will want to focus on. First, the basic structure of the parameters should look familiar - it looks like a Hash! We will be able to work with these parameters in much the same way we worked with Hashes in Mod1. Additionally, this parameters 'hash' includes the information that we sent in through our form as a nested hash with the key of 'task' and a value that looks like a hash with key/value pairs that match up with our form fields and the information that we (as a user) sent in when we submitted the form.
+Looking through this information, there are a few things we will want to focus on. First, the basic structure of the parameters should look familiar - it looks like a Hash! We will be able to work with these parameters in much the same way we worked with Hashes in Mod1. Additionally, this parameters 'hash' includes the information that we sent in through our form as a set of key/value pairs that match up with our form fields and the information that we (as a user) sent in when we submitted the form.
 
 Let's take a look at how we can access this information from inside our application. Throw a pry in your create action so that your controller looks like this:
 
@@ -454,7 +454,7 @@ Now, go back to your browser and click on 'Submit' again, then open your termina
 ```bash
 Started POST "/tasks" for 127.0.0.1 at 2022-11-29 23:12:54 -0700
 Processing by TasksController#create as TURBO_STREAM
-  Parameters: {"authenticity_token"=>"[FILTERED]", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}}
+  Parameters: {"authenticity_token"=>"[FILTERED]", "title"=>"New Task", "description"=>"This is a new task!"}
 
 From: /Users/mdao/turing/task_manager/app/controllers/tasks_controller.rb:10 TasksController#create:
 
@@ -469,26 +469,21 @@ Type in `params` to see some more Rails magic:
 
 ```bash
 [1] pry(#<TasksController>)> params
-=> #<ActionController::Parameters {"authenticity_token"=>"NPcAMoAPxAaXRH0cJ--64cw9q1mBaymSfU6sotrwhP0OH0-fSN6OkJboLFIy9eG_lMK5r4T6YR3gHYpZ9rehxQ", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}, "controller"=>"tasks", "action"=>"create"} permitted: false>
+=> #<ActionController::Parameters {"authenticity_token"=>"NPcAMoAPxAaXRH0cJ--64cw9q1mBaymSfU6sotrwhP0OH0-fSN6OkJboLFIy9eG_lMK5r4T6YR3gHYpZ9rehxQ", "title"=>"New Task", "description"=>"This is a new task!", "controller"=>"tasks", "action"=>"create"} permitted: false>
 [2] pry(#<TasksController>)>
 ```
 
 Rails has taken the parameters that we received in this request and turned it into a `params` object that we can use and manipulate inside of our application! Play around with this params object to get the two pieces of information we need for our new task - 'title' and 'description'.
 
 ```bash
-[2] pry(#<TasksController>)> params["task"]
-=> #<ActionController::Parameters {"title"=>"New Task", "description"=>"This is a new task!"} permitted: false>
-[3] pry(#<TasksController>)> params["task"]["title"]
+[1] pry(#<TasksController>)> params["title"]
 => "New Task"
-[4] pry(#<TasksController>)> params["task"]["description"]
+[2] pry(#<TasksController>)> params["description"]
 => "This is a new task!"
-[5] pry(#<TasksController>)> params[:task]
-=> #<ActionController::Parameters {"title"=>"New Task", "description"=>"This is a new task!"} permitted: false>
-[6] pry(#<TasksController>)> params[:task][:title]
+[3] pry(#<TasksController>)> params[:title]
 => "New Task"
-[7] pry(#<TasksController>)> params[:task][:description]
+[4] pry(#<TasksController>)> params[:description]
 => "This is a new task!"
-[8] pry(#<TasksController>)>
 ```
 
 Taking a look at the commands and their results above, can you spot a difference between the Hashes that you worked with in Mod1 and the params object that rails builds for us?
@@ -524,8 +519,8 @@ Let's change the code inside of our controller to use this Task class that we're
 ```ruby
 def create
   task = Task.new({
-    title: params[:task][:title],
-    description: params[:task][:description]
+    title: params[:title],
+    description: params[:description]
     })
 
   task.save
@@ -646,8 +641,8 @@ Now that we have our Task model created and our database ready to hold on to new
   def create
     binding.pry
     task = Task.new({
-      title: params[:task][:title],
-      description: params[:task][:description]
+      title: params[:title],
+      description: params[:description]
       })
     binding.pry
     task.save
@@ -662,8 +657,8 @@ Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new),
 9: def create
 => 10:   binding.pry
   11:   task = Task.new({
-  12:     title: params[:task][:title],
-  13:     description: params[:task][:description]
+  12:     title: params[:title],
+  13:     description: params[:description]
   14:     })
   15:   binding.pry
   16:   task.save
@@ -672,10 +667,7 @@ Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new),
   19: end
 
 [1] pry(#<TasksController>)> params
-=> #<ActionController::Parameters {"authenticity_token"=>"NPcAMoAPxAaXRH0cJ--64cw9q1mBaymSfU6sotrwhP0OH0-fSN6OkJboLFIy9eG_lMK5r4T6YR3gHYpZ9rehxQ", "task"=>{"title"=>"New Task", "description"=>"This is a new task!"}, "controller"=>"tasks", "action"=>"create"} permitted: false>
-
-[2] pry(#<TasksController>)> params[:task]
-=> #<ActionController::Parameters {"title"=>"New Task", "description"=>"This is a new task!"} permitted: false>
+=> #<ActionController::Parameters {"authenticity_token"=>"NPcAMoAPxAaXRH0cJ--64cw9q1mBaymSfU6sotrwhP0OH0-fSN6OkJboLFIy9eG_lMK5r4T6YR3gHYpZ9rehxQ",{"title"=>"New Task", "description"=>"This is a new task!", "controller"=>"tasks", "action"=>"create"} permitted: false>
 ```
 
 Looks good, let's `exit` to hit our next pry and see what `task` looks like at this point:
@@ -684,8 +676,8 @@ Looks good, let's `exit` to hit our next pry and see what `task` looks like 
 	9: def create
   10:   binding.pry
   11:   task = Task.new({
-  12:     title: params[:task][:title],
-  13:     description: params[:task][:description]
+  12:     title: params[:title],
+  13:     description: params[:description]
   14:     })
 => 15:   binding.pry
   16:   task.save
@@ -703,8 +695,8 @@ We have a Task object! We can see that it has a title and a description, but no 
 9: def create
   10:   binding.pry
   11:   task = Task.new({
-  12:     title: params[:task][:title],
-  13:     description: params[:task][:description]
+  12:     title: params[:title],
+  13:     description: params[:description]
   14:     })
   15:   binding.pry
   16:   task.save
@@ -936,8 +928,8 @@ Now, we need a view! This will be similar, but not exactly the same as the view 
   <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
   <input type="hidden" name="_method" value="PATCH" />
   <p>Edit</p>
-  <input type='text' name='task[title]' value="<%= @task.title %>"/><br/>
-  <textarea name='task[description]'><%= @task.description %></textarea><br/>
+  <input type='text' name='title' value="<%= @task.title %>"/><br/>
+  <textarea name='description'><%= @task.description %></textarea><br/>
   <input type='submit'/>
 </form>
 ```
@@ -966,8 +958,8 @@ And in our tasks controller, let's add an `update` action:
 def update
   task = Task.find(params[:id])
   task.update({
-    title: params[:task][:title],
-    description: params[:task][:description]
+    title: params[:title],
+    description: params[:description]
     })
   task.save
   redirect_to "/tasks/#{task.id}"
@@ -976,7 +968,7 @@ end
 
 There's a lot going on here - let's break it down.
 
-Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action. Then, we can use an ActiveRecord `udpate` to change the object that ActiveRecord found and created for us. Finally, we need to `save` the changes we made to that object in our database. And, thinking way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
+Before we can make any updates to a record in our database, we first need to find that information, which is why we are using the `find` method that we used on our `show` action. Then, we can use an ActiveRecord `update` to change the object that ActiveRecord found and created for us. Finally, we need to `save` the changes we made to that object in our database. And, thinking way back to when we were creating an object, Rails will expect us to redirect after making this update, so we are going to redirect back to the tasks' show page.
 
 Now that we have this edit functionality implemented, make sure you have your server running, and play around with your new fancy form!
 
