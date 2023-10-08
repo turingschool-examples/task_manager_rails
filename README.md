@@ -19,7 +19,7 @@ Throughout the module, we'll talk through some conventions and best practices, b
 
 ## Getting Configured
 
-Before creating our new Task Manager app, let's make sure we are all on the same version of Rails. For this tutorial, you will want to be running Rails 7.0.5. To check which version of rails you have installed, run `$ rails -v`. If you see any version other than 7.0.5, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
+Before creating our new Task Manager app, let's make sure we are all on the same version of Rails. For this tutorial, you will want to be running Rails 7.0.6. To check which version of rails you have installed, run `$ rails -v`. If you see any version other than 7.0.6, you will need to follow [these instructions](./rails_uninstall.md) to get the correct version installed.
 
 After confirming that you are running the correct version of rails, we are ready to get started!
 
@@ -50,7 +50,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.0.5"
+gem "rails", "~> 7.0.6"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -143,7 +143,7 @@ You should see something like this:
 
 ```bash
 => Booting Puma
-=> Rails 7.0.5 application starting in development
+=> Rails 7.0.6 application starting in development
 => Run `bin/rails server --help` for more startup options
 Puma starting in single mode...
 * Puma version: 5.6.5 (ruby 3.2.2-p18) ("Birdie's Version")
