@@ -220,7 +220,7 @@ class WelcomeController < ApplicationController
 end
 ```
 
-Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for request formats: text/html`. Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser in the response body. It was expecting to find some HMTL that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
+Refresh the page again. New error! You should now see the following text (with some additional info): `WelcomeController#index is missing a template for request formats: text/html`. Rails is telling us that now it was able to find the controller and action we wanted, but once there, it didn't know what information to send back to the browser in the response body. It was expecting to find some HTML that it could send back for the browser to render, but it found nothing. Let's go create that HTML in our views directory.
 
 In your `app/views` directory, add a sub-directory called `welcome` and, within that directory, a file called `index.html.erb`. When creating views, we name the files the same as our action: `def index` to `index.html.erb`. And, those files will live in a directory with the same name as our controller: `WelcomeController` to `views/welcome/`. The path for your new file should be `app/views/welcome/index.html.erb`.
 
