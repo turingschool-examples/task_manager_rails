@@ -304,8 +304,8 @@ In that file, add the following HTML:
 <h1>Welcome to the Task Manager</h1>
 
 <ul>
-	<li><a href="/tasks">Task Index</a></li>
-	<li><a href="/tasks/new">New Task</a></li>
+  <li><a href="/tasks">Task Index</a></li>
+  <li><a href="/tasks/new">New Task</a></li>
 </ul>
 ```
 
@@ -421,15 +421,11 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 
 ```html
 <form action="/tasks" method="post">
-	<input
-		type="hidden"
-		name="authenticity_token"
-		value="<%= form_authenticity_token %>"
-	/>
-	<p>Enter a new task:</p>
-	<input type="text" name="title" /><br />
-	<textarea name="description"></textarea><br />
-	<input type="submit" />
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+  <p>Enter a new task:</p>
+  <input type='text' name='title'/><br/>
+  <textarea name='description'></textarea><br/>
+  <input type='submit'/>
 </form>
 ```
 
