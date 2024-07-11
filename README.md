@@ -120,11 +120,13 @@ $ bundle install
 
 Great - now we can use `binding.pry` anywhere in our app to debug as we go!
 
-## Getting the App Running
+## Database Set-Up
 
 Before we can see what our new rails app can do, we need to do some more set up. First, let's create our app's database. Do this from the command line with:
 
-`rails db:create`
+```bash
+$ rails db:create
+```
 
 You should see some output like this:
 
@@ -133,9 +135,79 @@ Created database 'task_manager_development'
 Created database 'task_manager_test'
 ```
 
-Notice how this created two databases.
+We have created two databases, a "development" and a "test" database. In this tutorial, we won't be writing any tests so we won't touch our test database. We are working in the "development" environment.
 
-Now we will need to get our server up and running and ready for HTTP requests. To do this, run either
+Great, now our database is created! But, we don't have any tables yet.
+
+### Migrating to our Database
+
+We could potentially create a tasks table directly from our terminal, but that's no fun, and it makes it pretty difficult to work with other people. Instead, let's create some migrations.
+
+Migrations allow you to evolve your database structure over time. Each migration includes instructions to make some change to the database (e.g. adding a table, adding columns to a table, dropping a table, etc.). One advantage to this approach is that it will allow you to transfer the application to different computers without transferring the whole database. This isn't a big problem for us now, but as your database grows it will be advantageous to be able to transfer the instructions to create the database instead of the database itself.
+
+To create a migration that will send instructions to create a tasks table to our database, run the following command from your terminal:
+
+```bash
+$ rails generate migration CreateTask title:string description:string
+```
+
+In this command, we are telling rails to generate a migration file that will create a tasks table in our database with two columns - title and description. To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`. Open that file and you will see the following:
+
+```ruby
+class CreateTask < ActiveRecord::Migration[7.0]
+  def change
+    create_table :tasks do |t|
+      t.string :title
+      t.string :description
+
+      t.timestamps
+    end
+  end
+end
+```
+
+So, now we have a migration with some instructions to tell our database to create a tasks table, but how do we actually get the table created? Run the following in your terminal:
+
+```bash
+$ rails db:migrate
+```
+
+And you should see something like this:
+
+```bash
+== 20221130062449 CreateTask: migrating =======================================
+-- create_table(:tasks)
+   -> 0.0052s
+== 20221130062449 CreateTask: migrated (0.0053s) ==============================
+```
+
+Great! How can we verify that worked?
+
+In your terminal, connect to the database that we just created, and see if we can select some information from our tasks table:
+
+```bash
+$ rails dbconsole
+```
+
+```bash
+psql (14.2)
+Type "help" for help.
+
+task_manager_development=# SELECT * FROM tasks;
+ id | title | description | created_at | updated_at
+----+-------+-------------+------------+------------
+(0 rows)
+
+task_manager_development=#
+```
+
+Awesome - we have a database with a table for tasks! No records yet, but that's ok - all we needed to know was that our database is up a configured correctly.
+
+To exit the psql session, enter the command `exit`
+
+## Getting the App Running
+
+Now that we've set up our database, it's time to get our server up and running and ready for HTTP requests. To do this, run either
 
 `rails server` or `rails s`
 
@@ -359,7 +431,7 @@ And now we will create a new view for `tasks/new.html.erb` and include the follo
 
 Here we have a form with an action (url path) of `/tasks` and a method of `post`. This combination of path and verb will be important when we create the route, controller and action. We then have an text input field for the title, a textarea for the description, and a submit button.
 
-*side note*: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails. If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
+_side note_: You may be wondering about this `form_authenticity_token` business - don't worry about this now; it has to do with security protocols in Rails. If you are *super* curious, take that line out and see what happens - then come back and put that line back in when your form no longer works!
 
 Navigate to [http://localhost:3000/tasks/new](http://localhost:3000/tasks/new) to see your beautiful form!
 
@@ -382,7 +454,7 @@ Rails.application.routes.draw do
 
   get "/tasks", to: "tasks#index"
   get "/tasks/new", to: "tasks#new"
-  post "/tasks", to: "tasks#create"  
+  post "/tasks", to: "tasks#create"
 end
 ```
 
@@ -500,7 +572,7 @@ Completed 204 No Content in 208904ms (ActiveRecord: 0.0ms | Allocations: 31596)
 
 ## Saving Tasks
 
-So we're able to get information in from our form, but we haven't really done much with it yet. It would be great if we could save it somewhere...**
+So we're able to get information in from our form, but we haven't really done much with it yet. It would be great if we could save it somewhere...\*\*
 
 ### Our Approach
 
@@ -545,9 +617,11 @@ Why inherit from `ApplicationRecord`? This Task class that we are creating is m
 
 When we use the `new` method, Rails is going to attempt to create an object with attributes that match up to column names that exist in a `tasks` table in our database; and, when we attempt to `save` that object, Rails will try to `INSERT` a new record in our database with those attributes. Can you see where we might run into problems? We haven't set up our database yet, much less any tables in that database!
 
-### Setting up our Database
+### Reviewing Our Database Set-up
 
-Remember earlier that we created our database with this command:
+At the start of this tutorial we set up our database. Let's review what we did.
+
+First, we created our database with this command:
 
 ```bash
 $ rails db:create
@@ -560,55 +634,23 @@ Created database 'task_manager_development'
 Created database 'task_manager_test'
 ```
 
-We have created two databases, a "development" and a "test" database. In this tutorial, we won't be writing any tests so we won't touch our test database. We are working in the "development" environment.
+We created two databases, a "development" and a "test" database. For this tutorial we are working in the "development" environment because we are not writing tests.
 
-Great, now our database is created! But, we don't have any tables yet.
-
-### Migrating to our Database
-
-We could potentially create a tasks table directly from our terminal, but that's no fun, and it makes it pretty difficult to work with other people. Instead, let's create some migrations.
-
-Migrations allow you to evolve your database structure over time. Each migration includes instructions to make some change to the database (e.g. adding a table, adding columns to a table, dropping a table, etc.). One advantage to this approach is that it will allow you to transfer the application to different computers without transferring the whole database. This isn't a big problem for us now, but as your database grows it will be advantageous to be able to transfer the instructions to create the database instead of the database itself.
-
-To create a migration that will send instructions to create a tasks table to our database, stop your rails server by pressing `CTRL+C`, and then run the following command from your terminal:
+We then created a migration with the instructions for creating a tasks table in our database by running the following command:
 
 ```bash
 $ rails generate migration CreateTask title:string description:string
 ```
 
-In this command, we are telling rails to generate a migration file that will create a tasks table in our database with two columns - title and description. To see the migration that rails created, open your `db/migrate` directory, and you should have a file in there that is called something like `db/migrate/20190414173402_create_task.rb`. Open that file and you will see the following:
+In this command, we told rails to generate a migration file that will create a tasks table in our database with two columns - title and description. You can take a look at your migration in a file named something like `db/migrate/20190414173402_create_task.rb`.
 
-```ruby
-class CreateTask < ActiveRecord::Migration[7.0]
-  def change
-    create_table :tasks do |t|
-      t.string :title
-      t.string :description
-
-      t.timestamps
-    end
-  end
-end
-```
-
-So, now we have a migration with some instructions to tell our database to create a tasks table, but how do we actually get the table created? Run the following in your terminal:
+We then ran the following code to apply our migration and actually create a database.
 
 ```bash
 $ rails db:migrate
 ```
 
-And you should see something like this:
-
-```bash
-== 20221130062449 CreateTask: migrating =======================================
--- create_table(:tasks)
-   -> 0.0052s
-== 20221130062449 CreateTask: migrated (0.0053s) ==============================
-```
-
-Great! How can we verify that worked?
-
-In your terminal, connect to the database that we just created, and see if we can select some information from our tasks table:
+Let's review what our table currently looks like. In your terminal, connect to the database, and see what's currently in your task table.
 
 ```bash
 $ rails dbconsole
@@ -626,7 +668,7 @@ task_manager_development=# SELECT * FROM tasks;
 task_manager_development=#
 ```
 
-Awesome - we have a database with a table for tasks! No records yet, but that's ok - all we needed to know was that our database is up a configured correctly.
+You may have some tasks in your table, or not. Either way is fine!
 
 To exit the psql session, enter the command `exit`
 
@@ -742,7 +784,7 @@ Now, refresh your browser - what do you see? You are now seeing... something... 
 <% end %>
 ```
 
-Refresh your browser and you should see your new task!**
+Refresh your browser and you should see your new task!\*\*
 
 ### Showing Individual Tasks
 
@@ -876,10 +918,9 @@ This updating will be very similar to creating new tasks. At a high level, we wi
 
 - Create a button to edit a specific task
 - Create a route that will GET us an edit form
-    - Add the action and views for this route
+  - Add the action and views for this route
 - Create a route that will update a specific task based on form input
-    - Add the action that will accomplish this update and redirect the user
-    
+  - Add the action that will accomplish this update and redirect the user
 
 ### Add an Edit Button to the Show Page
 
@@ -1030,7 +1071,7 @@ Now, we should be able to navigate to our tasks index at [http://localhost:3000
 
 ### Finished!
 
-Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource! We can now Create, Read, Update, and Delete tasks!**
+Congrats! You have finished your first Rails app that can handle full CRUD functionality for a database resource! We can now Create, Read, Update, and Delete tasks!\*\*
 
 ### Checks for Understanding
 
