@@ -366,7 +366,7 @@ Wait, what's this new `<%= %>` syntax? This is called an `erb` tag - erb stan
 <h1>All Tasks</h1>
 
 <% @tasks.each do |task| %>
-<h3><%= task %></h3>
+  <h3><%= task %></h3>
 <% end %>
 ```
 
@@ -783,8 +783,8 @@ Now, refresh your browser - what do you see? You are now seeing... something... 
 <h1>All Tasks</h1>
 
 <% @tasks.each do |task| %>
-<h3><%= task.title %></h3>
-<p><%= task.description %></p>
+  <h3><%= task.title %></h3>
+  <p><%= task.description %></p>
 <% end %>
 ```
 
@@ -809,8 +809,8 @@ From a users perspective, it makes the most sense to have a link to each task di
 <h1>All Tasks</h1>
 
 <% @tasks.each do |task| %>
-<h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
-<p><%= task.description %></p>
+  <h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
+  <p><%= task.description %></p>
 <% end %>
 ```
 
@@ -970,16 +970,12 @@ Now, we need a view! This will be similar, but not exactly the same as the view 
 
 ```html
 <form action="/tasks/<%= @task.id %>" method="post">
-	<input
-		type="hidden"
-		name="authenticity_token"
-		value="<%= form_authenticity_token %>"
-	/>
-	<input type="hidden" name="_method" value="PATCH" />
-	<p>Edit</p>
-	<input type="text" name="title" value="<%= @task.title %>" /><br />
-	<textarea name="description"><%= @task.description %></textarea><br />
-	<input type="submit" />
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+  <input type="hidden" name="_method" value="PATCH" />
+  <p>Edit</p>
+  <input type='text' name='title' value="<%= @task.title %>"/><br/>
+  <textarea name='description'><%= @task.description %></textarea><br/>
+  <input type='submit'/>
 </form>
 ```
 
@@ -1041,18 +1037,14 @@ Let's add this 'button' to our `tasks/index.html.erb`:
 <h1>All Tasks</h1>
 
 <% @tasks.each do |task| %>
-<h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
-<p><%= task.description %></p>
-<a href="/tasks/<%= task.id  %>/edit">Edit</a>
-<form action="/tasks/<%= task.id %>" method="POST">
-	<input
-		type="hidden"
-		name="authenticity_token"
-		value="<%= form_authenticity_token %>"
-	/>
-	<input type="hidden" name="_method" value="DELETE" />
-	<input type="submit" value="delete" />
-</form>
+  <h3><a href="/tasks/<%= task.id %>"><%= task.title %></a></h3>
+  <p><%= task.description %></p>
+  <a href="/tasks/<%= task.id  %>/edit">Edit</a>
+  <form action="/tasks/<%= task.id %>" method="POST">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="delete"/>
+  </form>
 <% end %>
 ```
 
